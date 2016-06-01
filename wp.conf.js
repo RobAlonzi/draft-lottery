@@ -5,7 +5,6 @@ function config() {
 	return {
 		entry: {
 			application: "./src/scripts/application",
-			settings: "./src/scripts/settings.js",
 			vendor: ["lodash"]
 		},
 		output: {

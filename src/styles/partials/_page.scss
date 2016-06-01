@@ -1,0 +1,60 @@
+header{
+	background: $blue;
+	padding:20px 0;
+	text-align:center;
+	
+	h1{
+		color:$white;
+		margin:0;
+	}
+}
+
+
+.lottery-balls, .odds, .buttons, .settings{ margin-top:40px; }
+
+.lottery-balls{
+	.ball{
+		border-radius: 50%;
+		width:100px;
+		height:100px;
+		background: radial-gradient(circle at 50% 40%,#fcfcfc,#efeff1 66%,#9b5050 100%);
+		margin:0 auto;
+		position: relative;
+
+		span{
+			position: absolute;
+			top:30%;
+			width: 100%;
+			text-align: center;
+			font-size:2em;
+		}
+	}
+}
+
+
+.buttons{
+	text-align:center;
+	button{
+		margin:20px;
+	}
+}
+
+.odds{
+	h2{
+		@include bp-sm(){
+			text-align: center;
+		}
+	}
+
+	ul{
+		li{
+			list-style-type: none;
+			padding:15px;
+			text-align: center;
+
+			span{
+				display: block;
+			}
+		}
+	}
+}

@@ -1,0 +1,26 @@
+@import "vendor/normalize";
+@import "vendor/bootstrap";
+@import "vendor/bootstrap-theme";
+
+@import "partials/mixins";
+
+$blue : #004a83;
+$white : #FFF;
+$black : #222;
+
+*{
+	color:$black;
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+
+
+html,
+body{
+    font-weight: 300;
+    text-rendering: optimizeLegibility;
+}
+
+
+@import "partials/page";
