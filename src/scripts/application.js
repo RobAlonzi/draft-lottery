@@ -1,11 +1,40 @@
+/*	
+	IMPORTS
+*/
 import "../styles/site.scss";
-import Defaults from "./settings.js";
 import Odds from "./odds.js";
 import Balls from "./balls.js";
 
+/*	
+	SETTINGS
+*/
+const 	Title = "OTHL Draft Lottery",
+		Desc = "Lottery description";
+let 	ballsDrawnCount = 0,
+		ballsDrawn = [],
+		ballMin = 1,
+		ballMax = 14;
+
+
+/*	
+	SET UP
+*/
+Odds.setUpOdds(Balls.setRange(ballMin, ballMax));
 Odds.setUpHTML();
 
-Balls.createBall(1);
-Balls.createBall(2);
-Balls.createBall(13);
-Balls.createBall(14);
+
+
+
+/*	
+	HANDLERS
+*/
+document.getElementById("start-btn").addEventListener("click", () => {
+	ballsDrawnCount++;
+	let lotteryDraw =  Balls.drawBall();
+	Odds.update(lotteryDraw)
+});
+
+document.getElementById("reset-btn").addEventListener("click", () => {
+	ballsDrawnCount = 0;
+	Balls.reset();
+});
