@@ -19,8 +19,10 @@ let 	ballsDrawnCount = 0,
 /*	
 	SET UP
 */
+
 Odds.setUpOdds(Balls.setRange(ballMin, ballMax));
 Odds.setUpHTML();
+
 
 
 
@@ -31,7 +33,7 @@ Odds.setUpHTML();
 document.getElementById("start-btn").addEventListener("click", () => {
 	ballsDrawnCount++;
 	let lotteryDraw =  Balls.drawBall();
-	Odds.update(lotteryDraw)
+	Odds.update(lotteryDraw);
 });
 
 document.getElementById("reset-btn").addEventListener("click", () => {

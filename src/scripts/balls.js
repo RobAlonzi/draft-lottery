@@ -27,6 +27,7 @@ exports.drawBall = () => {
 	createBall(ballChosen);
 
 	return {
+			ballDrawn: ballChosen,
 			drawn: ballsDrawn,
 			remaining: ballsRemaining
 		};

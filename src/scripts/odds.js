@@ -62,6 +62,7 @@ let _teams = [
 module.exports = exports = {};
 
 exports.setUpHTML = (teams = _teams) => {
+
 	let ul = document.createElement('ul');
 
 	teams.forEach((team) => {
@@ -90,15 +91,30 @@ exports.setUpHTML = (teams = _teams) => {
 }
 
 exports.update = (lotteryDraw) => {
+	console.log(lotteryDraw.ballDrawn);
 	console.log(lotteryDraw.drawn);
 	console.log(lotteryDraw.remaining);
 }
 
 
 exports.setUpOdds = (range) => {
-	let allCombos = getLotteryCombos(range, 1);
+	let allCombos = shuffleArray(getLotteryCombos(range, 4));
 
-	console.log(allCombos); 
+	_teams.forEach((team) => {
+		team.winningCombos = [];
+
+		for(let i = 0; i < team.combos; i++){
+			team.winningCombos.push(allCombos[i]);
+		}
+		allCombos.splice(0, team.combos);
+	});
+
+	_teams.push({
+		name: "Redraw",
+		combos: allCombos.length,
+		winningCombos: allCombos
+	});
+
 }
 
 
@@ -110,8 +126,6 @@ exports.setUpOdds = (range) => {
 function getLotteryCombos(totalBalls, ballsPerCombo) {
 
 	var makeCombos =  (ballsPerCombo, totalBalls, tmp, combos) => {
-		console.log(ballsPerCombo);
-
 	    if (ballsPerCombo == 0) {
 	        if (tmp.length > 0) {
 	            combos[combos.length] = tmp;
@@ -133,6 +147,16 @@ function getLotteryCombos(totalBalls, ballsPerCombo) {
     return combos;
 }
 
+
+function shuffleArray(array) {
+	for (var i = array.length - 1; i > 0; i--) {
+	    var j = Math.floor(Math.random() * (i + 1));
+	    var temp = array[i];
+	    array[i] = array[j];
+	    array[j] = temp;
+	}
+	return array;
+}
 
 
 //FOR LEARNING
