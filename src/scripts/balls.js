@@ -1,36 +1,26 @@
+import {settings} from "./settings.js";
+
 module.exports = exports = {};
 
-let ballMin = 1,
-	ballMax = 14,
-	ballsLoaded = [],
-	ballsDrawn = [],
-	ballsRemaining = [];
-
-exports.setRange = (min = ballMin, max = ballMax) => {
-	ballMin = min;
-	ballMax = max;
-
-	for(let i = min; i <= max; i++){
-		ballsLoaded.push(i);
+exports.setRange = () => {
+	for(let i = settings.lottery.ballMin; i <= settings.lottery.ballMax; i++){
+		settings.lottery.ballsLoaded.push(i);
 	}
 
-	ballsRemaining = ballsLoaded.slice();
+	settings.lottery.ballsRemaining = settings.lottery.ballsLoaded.slice();
 	
-	return ballsLoaded;
+	return true;
 };	
 
 
 exports.drawBall = () => {
-	let indexDrawn = Math.floor(Math.random() * ballsRemaining.length);
-	let ballChosen = ballsRemaining[indexDrawn];
-	ballsDrawn.push(ballsRemaining.splice(indexDrawn, 1)[0]);
+	let indexDrawn = Math.floor(Math.random() * settings.lottery.ballsRemaining.length);
+	let ballChosen = settings.lottery.ballsRemaining[indexDrawn];
+	settings.lottery.ballsDrawn.push(settings.lottery.ballsRemaining.splice(indexDrawn, 1)[0]);
+	settings.lottery.ballPicked = ballChosen;
 	createBall(ballChosen);
 
-	return {
-			ballDrawn: ballChosen,
-			drawn: ballsDrawn,
-			remaining: ballsRemaining
-		};
+	return true;
 };
 
 exports.reset = () => {

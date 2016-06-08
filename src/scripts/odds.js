@@ -1,71 +1,57 @@
-let _teams = [
-	{
-		name: "Toronto Maple Leafs",
-		combos: 200
-	},
-	{
-		name: "Edmonton Oilers",
-		combos: 135
-	},
-	{
-		name: "Vancouver Canucks",
-		combos: 115
-	},
-	{
-		name: "Columbus Blue Jackets",
-		combos: 95
-	},
-	{
-		name: "Calgary Flames",
-		combos: 85
-	},
-	{
-		name: "Winnipeg Jets",
-		combos: 75
-	},
-	{
-		name: "Arizona Coyotes",
-		combos: 65
-	},
-	{
-		name: "Buffalo Sabres",
-		combos: 60
-	},
-	{
-		name: "Montreal Canadiens",
-		combos: 50
-	},
-	{
-		name: "New Jersey Devils",
-		combos: 35
-	},
-	{
-		name: "Colorado Avalanche",
-		combos: 30
-	},
-	{
-		name: "Ottawa Senators",
-		combos: 25
-	},
-	{
-		name: "Carolina Hurricanes",
-		combos: 20
-	},
-	{
-		name: "Boston Bruins",
-		combos: 10
-	},
-	];
-
+import {settings} from "./settings.js";
 
 
 module.exports = exports = {};
 
-exports.setUpHTML = (teams = _teams) => {
+exports.setUpHTML = makeHTML;
 
+exports.update = () => {
+	settings.teams.forEach((team) => {
+		let tmpWinningCombos = [];
+		for(let i = 0; i < team.winningCombos.length; i++){
+			if(team.winningCombos[i].indexOf(settings.lottery.ballPicked) === -1){
+				team.losingCombos.push(team.winningCombos[i]);
+			}else{
+				tmpWinningCombos.push(team.winningCombos[i]);
+			}
+		}
+
+		team.winningCombos = tmpWinningCombos;
+		team.combos = team.winningCombos.length;
+	});
+
+	updateOdds();
+}
+
+
+exports.setUpOdds = () => {
+	let allCombos = getLotteryCombos(settings.lottery.ballsLoaded, 4);
+	allCombos = shuffleArray(allCombos);
+
+	settings.teams.forEach((team) => {
+		team.winningCombos = [];
+
+		for(let i = 0; i < team.combos; i++){
+			team.winningCombos.push(allCombos[i]);
+		}
+		allCombos.splice(0, team.combos);
+	});
+
+	//Leftover combos become redraw
+	settings.teams.push({
+		name: "Redraw",
+		combos: allCombos.length,
+		winningCombos: allCombos,
+		losingCombos: []
+	});
+}
+
+
+function makeHTML() {
+	document.getElementById('odds').innerHTML = "";
 	let ul = document.createElement('ul');
 
-	teams.forEach((team) => {
+	settings.teams.forEach((team) => {
 		let name = team.name,
 			combos = team.combos;
 
@@ -89,34 +75,6 @@ exports.setUpHTML = (teams = _teams) => {
 
 	return true;
 }
-
-exports.update = (lotteryDraw) => {
-	console.log(lotteryDraw.ballDrawn);
-	console.log(lotteryDraw.drawn);
-	console.log(lotteryDraw.remaining);
-}
-
-
-exports.setUpOdds = (range) => {
-	let allCombos = shuffleArray(getLotteryCombos(range, 4));
-
-	_teams.forEach((team) => {
-		team.winningCombos = [];
-
-		for(let i = 0; i < team.combos; i++){
-			team.winningCombos.push(allCombos[i]);
-		}
-		allCombos.splice(0, team.combos);
-	});
-
-	_teams.push({
-		name: "Redraw",
-		combos: allCombos.length,
-		winningCombos: allCombos
-	});
-
-}
-
 
 
 //http://www.geeksforgeeks.org/print-all-possible-combinations-of-r-elements-in-a-given-array-of-size-n/
@@ -149,9 +107,9 @@ function getLotteryCombos(totalBalls, ballsPerCombo) {
 
 
 function shuffleArray(array) {
-	for (var i = array.length - 1; i > 0; i--) {
-	    var j = Math.floor(Math.random() * (i + 1));
-	    var temp = array[i];
+	for (let i = array.length - 1; i > 0; i--) {
+	    let j = Math.floor(Math.random() * (i + 1));
+	    let temp = array[i];
 	    array[i] = array[j];
 	    array[j] = temp;
 	}
@@ -159,59 +117,6 @@ function shuffleArray(array) {
 }
 
 
-//FOR LEARNING
-// function getLotteryCombos(totalBalls, ballsPerCombo) {
-
-// 	var makeCombos =  (ballsPerCombo, totalBalls, tmp, combos) => {
-// 		//if(ballsPerCombo === 0) console.log(ballsPerCombo);
-// 		if(ballsPerCombo === 0) console.log(tmp.length);
-
-// 	    if (ballsPerCombo == 0) {
-// 	        if (tmp.length > 0) {
-// 	            combos[combos.length] = tmp;
-// 	        }
-// 	        return;
-// 	    }
-
-// 	    for (var j = 0; j < totalBalls.length; j++) {
-// 	        makeCombos(ballsPerCombo - 1, totalBalls.slice(j + 1), tmp.concat([totalBalls[j]]), combos);
-// 	    }
-// 	    return;
-// 	}
-
-//     let combos = [],
-//     	tmp = [];
-
-//     makeCombos(4, totalBalls, tmp, combos);
-
-//     return combos;
-// }
-
-
-
-
-
-
-// var combine = function(a, min) {
-
-//     var fn = function(n, src, got, all) {
-//         if (n == 0) {
-//             if (got.length > 0) {
-//                 all[all.length] = got;
-//             }
-//             return;
-//         }
-//         for (var j = 0; j < src.length; j++) {
-//             fn(n - 1, src.slice(j + 1), got.concat([src[j]]), all);
-//         }
-//         return;
-//     }
-
-
-//     var all = [];
-//     for (var i = min; i < a.length; i++) {
-//         fn(i, a, [], all);
-//     }
-//     all.push(a);
-//     return all;
-// }
+function updateOdds(){
+	makeHTML();
+}
