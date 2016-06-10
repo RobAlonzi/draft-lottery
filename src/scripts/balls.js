@@ -24,8 +24,8 @@ exports.drawBall = () => {
 };
 
 exports.reset = () => {
-	ballsDrawn = [],
-	ballsRemaining = ballsLoaded.slice();
+	settings.lottery.ballsDrawn = [],
+	settings.lottery.ballsRemaining = settings.lottery.ballsLoaded.slice();
 	document.getElementById('lottery-balls').innerHTML = "";
 }
 

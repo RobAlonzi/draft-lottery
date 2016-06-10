@@ -10,92 +10,121 @@ exports.settings  = {
 		ballsDrawn: [],
 		ballsRemaining: [],
 		ballMin: 1,
-		ballMax: 14
+		ballMax: 14,
+		combosRemaining:null
 	},
 	teams: [
 	{
 		name: "Toronto Maple Leafs",
-		combos: 200,
+		combosStart: 200,
+		combosLeft: 200,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Edmonton Oilers",
-		combos: 135,
+		combosStart: 135,
+		combosLeft: 135,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Vancouver Canucks",
-		combos: 115,
+		combosStart: 115,
+		combosLeft: 115,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Columbus Blue Jackets",
-		combos: 95,
+		combosStart: 95,
+		combosLeft: 95,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Calgary Flames",
-		combos: 85,
+		combosStart: 85,
+		combosLeft: 85,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Winnipeg Jets",
-		combos: 75,
+		combosStart: 75,
+		combosLeft: 75,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Arizona Coyotes",
-		combos: 65,
+		combosStart: 65,
+		combosLeft: 65,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Buffalo Sabres",
-		combos: 60,
+		combosStart: 60,
+		combosLeft: 60,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Montreal Canadiens",
-		combos: 50,
+		combosStart: 50,
+		combosLeft: 50,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "New Jersey Devils",
-		combos: 35,
+		combosStart: 35,
+		combosLeft: 35,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Colorado Avalanche",
-		combos: 30,
+		combosStart: 30,
+		combosLeft: 30,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Ottawa Senators",
-		combos: 25,
+		combosStart: 25,
+		combosLeft: 25,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Carolina Hurricanes",
-		combos: 20,
+		combosStart: 20,
+		combosLeft: 20,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	},{
 		name: "Boston Bruins",
-		combos: 10,
+		combosStart: 10,
+		combosLeft: 10,
 		winningPercentage: null,
-		winningCombos: [],
+		winningCombosStart: [],
+		winningCombosLeft: [],
 		losingCombos: []
 	}
 	]

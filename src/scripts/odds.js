@@ -3,45 +3,73 @@ import {settings} from "./settings.js";
 
 module.exports = exports = {};
 
-exports.setUpHTML = makeHTML;
+exports.reset = () => {
+	settings.teams.forEach((team) => {
+		team.combosLeft = team.combosStart;
+		team.winningCombosLeft = team.winningCombosStart.slice();
+		team.losingCombos = [];
+	});	
+	settings.lottery.combosRemaining = settings.lottery.totalCombosStart;
+	updateOdds();
+}
+
+exports.setUpHTML = () => {
+	calculateOdds();
+	makeHTML();
+	console.log(settings);
+}
 
 exports.update = () => {
+	let combosRemaining = 0;
 	settings.teams.forEach((team) => {
 		let tmpWinningCombos = [];
-		for(let i = 0; i < team.winningCombos.length; i++){
-			if(team.winningCombos[i].indexOf(settings.lottery.ballPicked) === -1){
-				team.losingCombos.push(team.winningCombos[i]);
+		for(let i = 0; i < team.winningCombosLeft.length; i++){
+			if(team.winningCombosLeft[i].indexOf(settings.lottery.ballPicked) === -1){
+				team.losingCombos.push(team.winningCombosLeft[i]);
 			}else{
-				tmpWinningCombos.push(team.winningCombos[i]);
+				tmpWinningCombos.push(team.winningCombosLeft[i]);
 			}
 		}
 
-		team.winningCombos = tmpWinningCombos;
-		team.combos = team.winningCombos.length;
+		team.winningCombosLeft = tmpWinningCombos;
+		team.combosLeft = team.winningCombosLeft.length;
+		combosRemaining += team.winningCombosLeft.length;
 	});
 
+	settings.lottery.combosRemaining = combosRemaining;
+
 	updateOdds();
+}
+
+exports.startNewRound = () => {
+	console.log("yo");
 }
 
 
 exports.setUpOdds = () => {
 	let allCombos = getLotteryCombos(settings.lottery.ballsLoaded, 4);
+	settings.lottery.combosRemaining = settings.lottery.totalCombosStart = allCombos.length;
 	allCombos = shuffleArray(allCombos);
 
 	settings.teams.forEach((team) => {
-		team.winningCombos = [];
+		team.winningCombosStart = [];
 
-		for(let i = 0; i < team.combos; i++){
-			team.winningCombos.push(allCombos[i]);
+		for(let i = 0; i < team.combosStart; i++){
+			team.winningCombosStart.push(allCombos[i]);
 		}
-		allCombos.splice(0, team.combos);
+
+		team.winningCombosLeft = team.winningCombosStart.slice();
+		allCombos.splice(0, team.combosStart);
 	});
 
 	//Leftover combos become redraw
 	settings.teams.push({
 		name: "Redraw",
-		combos: allCombos.length,
-		winningCombos: allCombos,
+		combosStart: allCombos.length,
+		combosLeft: allCombos.length,
+		winningPercentage: (allCombos.length / settings.lottery.combosRemaining * 100).toFixed(1),
+		winningCombosStart: allCombos,
+		winningCombosLeft: allCombos,
 		losingCombos: []
 	});
 }
@@ -53,22 +81,22 @@ function makeHTML() {
 
 	settings.teams.forEach((team) => {
 		let name = team.name,
-			combos = team.combos;
+			combos = team.combosLeft,
+			winningPercentage = team.winningPercentage;
 
-		let li = document.createElement('li'),
-			spanName = document.createElement('span'),
-			spanCombos = document.createElement('span');
+		let row = `
+			<li class="row">
+				<div class="name-odds-overview col-xs-12 col-md-6">
+					<span class="lottery-team">${name}</span>
+					<span class="combos-left">${combos} combinations remaining.</span>
+				</div>
+				<div class="odds-percent col-xs-12 col-md-6">
+					${winningPercentage}%
+				</div>	
+			</li>
+		`;
 
-		li.className = "col-xs-12 col-md-6 col-lg-3";
-		spanName.className = "lottery-team";
-		spanCombos.className = "remaining-odds";
-
-		spanName.textContent = name;
-		spanCombos.textContent = `${combos} combinations remaining.`;
-
-		li.appendChild(spanName);
-		li.appendChild(spanCombos);
-		ul.appendChild(li);
+		ul.innerHTML += row;
 	});
 
 	document.getElementById('odds').appendChild(ul);
@@ -107,7 +135,7 @@ function getLotteryCombos(totalBalls, ballsPerCombo) {
 
 
 function shuffleArray(array) {
-	for (let i = array.length - 1; i > 0; i--) {
+	for(let i = array.length - 1; i > 0; i--){
 	    let j = Math.floor(Math.random() * (i + 1));
 	    let temp = array[i];
 	    array[i] = array[j];
@@ -118,5 +146,18 @@ function shuffleArray(array) {
 
 
 function updateOdds(){
+	calculateOdds();
 	makeHTML();
+
+	return true;
+}
+
+
+function calculateOdds() {
+
+	settings.teams.forEach((team) => {
+		team.winningPercentage = (team.combosLeft / settings.lottery.combosRemaining * 100).toFixed(1);
+	});
+
+	return true;
 }
