@@ -37,13 +37,13 @@ function init() {
 	//assign the combos to each team
 	teams = Lottery.assignCombos(availableCombos, teams);
 
-	//calculate initial winning pct
-	teams.forEach((team) => {
-		team.winningPct = Odds.calculateWinningPct(lottery.combosRemaining, team.combos);
-	});
+	//calculate initial winning pct and sort
+	teams = Odds.calculateWinningPct(lottery.combosRemaining, teams);
+	teams = teams.sort(sortTeams);
+
 
 	//Create the HTML for the odds chart
-	HTMLCreate.setupOddsChart(teams);	
+	HTMLCreate.setupOddsChart(teams, ballsDrawn);	
 }
 
 //TO-DO : Too much logic in here. Esp the odds recaulculating
@@ -61,16 +61,10 @@ document.getElementById("start-btn").addEventListener("click", () => {
 	HTMLCreate.createLotteryBall(ballDrawn);
 
 	//recalculate odds and sort
-	teams = Odds.updateOdds(teams, ballDrawn);
-	lottery.combosRemaining = 0;
-	teams.forEach((team) => {
-		lottery.combosRemaining += team.combos;
-	});
-	teams.forEach((team) => {
-		team.winningPct = Odds.calculateWinningPct(lottery.combosRemaining, team.combos);
-	});
-
+	teams = Odds.updateCombosAndWinPct(teams, ballDrawn);
 	teams = teams.sort(sortTeams);
+
+	console.log(teams);
 
 
 
@@ -82,7 +76,7 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
 
 	//recreate the odds chart
-	HTMLCreate.setupOddsChart(teams);	
+	HTMLCreate.setupOddsChart(teams, ballsDrawn);	
 
 
 	// if(settings.lottery.ballsDrawnCount === 3){

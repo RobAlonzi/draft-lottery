@@ -1,12 +1,15 @@
-@import "vendor/normalize";
-@import "vendor/bootstrap";
-@import "vendor/bootstrap-theme";
-
+@import "vendor/bootstrap/bootstrap-reboot";
+@import "vendor/bootstrap/bootstrap-grid";
+@import "vendor/bootstrap/bootstrap";
+$ionicons-font-path: "fonts";
+@import "vendor/ionicons/ionicons";
 @import "partials/mixins";
+
 
 $blue : #004a83;
 $white : #FFF;
 $black : #222;
+
 
 *{
 	color:$black;

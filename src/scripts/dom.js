@@ -1,32 +1,66 @@
 module.exports = exports = {};
 
 
-exports.setupOddsChart = (teams) => {
+exports.setupOddsChart = (teams, ballsDrawn) => {
+
+	console.log(ballsDrawn);
 	
 	document.getElementById('odds').innerHTML = "";
-	let ul = document.createElement('ul');
+	let table = document.createElement('table'),
+		thead = document.createElement('thead'),
+		tbody = document.createElement('tbody');
 
-	teams.forEach((team) => {
+	table.className = "table";
+
+	let row = `<th>#</th>
+			   <th>Team</th>
+			   <th>Combos Remaining</th>`;
+
+	for(let i = (ballsDrawn - 1); i > 0; i--){
+		let NewRow = `<th>After ${i} Balls</th>`;
+		row += NewRow;
+	}				   
+
+	if(ballsDrawn > 0){
+		let NewRow = `<th>Original Odds</th>`;
+		row += NewRow;
+	}
+
+	thead.innerHTML = `<tr>${row}</tr>`;
+
+	table.appendChild(thead);
+
+	teams.forEach((team, i) => {
 		let name = team.name,
 			combos = team.combos,
-			winningPercentage = team.winningPct;
+			winningPercentage = team.winningPct.percent,
+			oldWinningPcts = '';
+
+		if(team.oldWinningPct){
+			team.oldWinningPct.forEach((pct) => {
+
+				let icon = pct.change > 0 ? 'up' : 'down';
+				oldWinningPcts += `<td>${pct.combos} (${pct.percent}% chance) </td>`;
+			});
+		}
+
+
 
 		let row = `
-			<li class="row">
-				<div class="name-odds-overview col-xs-12 col-md-6">
-					<span class="lottery-team">${name}</span>
-					<span class="combos-left">${combos} combinations remaining.</span>
-				</div>
-				<div class="odds-percent col-xs-12 col-md-6">
-					${winningPercentage}%
-				</div>	
-			</li>
+			<tr>
+				<th scope="row">${i+1}</th>
+				<td>${name}</td>
+				<td>${combos} (${winningPercentage}% chance) </td>
+				${oldWinningPcts}
+			</tr>
 		`;
 
-		ul.innerHTML += row;
+		tbody.innerHTML += row;
+		table.appendChild(tbody);
+
 	});
 
-	document.getElementById('odds').appendChild(ul);
+	document.getElementById('odds').appendChild(table);
 	return true;
 };
 
