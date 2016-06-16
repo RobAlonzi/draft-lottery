@@ -8,7 +8,7 @@ import Lottery from "./lottery.js";
 import HTMLCreate from "./dom.js";
 
 //copy defaults so we can reset quick if needed
-let settings = Object.assign({}, Defaults),
+let settings = JSON.parse(JSON.stringify(Defaults)),
 	lottery = settings.lottery,
 	teams = settings.teams,
 	ballsDrawn = 0,
@@ -64,10 +64,6 @@ document.getElementById("start-btn").addEventListener("click", () => {
 	teams = Odds.updateCombosAndWinPct(teams, ballDrawn);
 	teams = teams.sort(sortTeams);
 
-	console.log(teams);
-
-
-
 	if(ballsDrawn === 4){
 		HTMLCreate.showWinner(round, teams[0]);
 		round++;
@@ -87,11 +83,13 @@ document.getElementById("start-btn").addEventListener("click", () => {
 });
 
 document.getElementById("reset-btn").addEventListener("click", () => {
-	settings = Object.assign({}, Defaults),
+	settings = JSON.parse(JSON.stringify(Defaults)),
 	lottery = settings.lottery,
 	teams = settings.teams,
 	ballsDrawn = 0,
 	round = 1;
+
+	HTMLCreate.reset();
 
 	init();
 });
@@ -116,6 +114,10 @@ function sortTeams(a, b){
 	if(a.combos > b.combos)
 		return -1;
 	if(a.combos < b.combos)
+		return 1;
+	if(a.originalWinPct.combos > b.originalWinPct.combos)
+		return -1;
+	if(a.originalWinPct.combos < b.originalWinPct.combos)
 		return 1;
 	return 0;
 }

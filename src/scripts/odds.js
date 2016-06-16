@@ -4,6 +4,7 @@ module.exports = exports = {};
 exports.calculateWinningPct = (totalCombos, teams) => {
 	teams.forEach((team) => {
 		team.winningPct = calculateWinningPct(totalCombos, team.combos);
+		team.originalWinPct = team.winningPct;
 	});
 
 	return teams;
@@ -35,20 +36,26 @@ exports.updateCombosAndWinPct = (teams, ballDrawn) => {
 	});
 
 	teams.forEach((team) => {
-		team.winningPct = calculateWinningPct(totalCombos, team.combos, team.oldWinningPct[0].percent);
+		team.winningPct = calculateWinningPct(totalCombos, team.combos, team.originalWinPct);
 	});
 
 	return teams;
 }
 
 
-function calculateWinningPct(totalCombos, teamCombos, oldWinningPct = null) {
+function calculateWinningPct(totalCombos, teamCombos, originalWinPct) {
 	let winPct = (teamCombos / totalCombos * 100).toFixed(1),
-		difference = oldWinningPct ? (winPct - oldWinningPct).toFixed(1) : "--";
+		changeFromStart;
+
+	if(originalWinPct && originalWinPct.combos !== teamCombos){
+		changeFromStart = (winPct - originalWinPct.percent).toFixed(1);
+	}else{
+		changeFromStart = "--";
+	}
 
 	return {
 		percent: winPct,
-		change : difference,
+		change : changeFromStart,
 		combos : teamCombos
 	}
 }
