@@ -3,8 +3,8 @@ module.exports = exports = {};
 
 exports.calculateWinningPct = (totalCombos, teams) => {
 	teams.forEach((team) => {
-		team.winningPct = calculateWinningPct(totalCombos, team.combos);
-		team.originalWinPct = team.winningPct;
+		team.odds = calculateWinningPct(totalCombos, team.combos);
+		team.originalWinPct = team.odds;
 	});
 
 	return teams;
@@ -16,8 +16,8 @@ exports.updateCombosAndWinPct = (teams, ballDrawn) => {
 
 	teams.forEach((team) => {
 		//archive the previous round if necessary
-		team.oldWinningPct = team.oldWinningPct || [];
-		team.oldWinningPct.unshift(team.winningPct);
+		team.history = team.history || [];
+		team.history.unshift(team.odds);
 
 		//temporarily store new winning combos
 		let tmpWinningCombos = [];
@@ -36,11 +36,31 @@ exports.updateCombosAndWinPct = (teams, ballDrawn) => {
 	});
 
 	teams.forEach((team) => {
-		team.winningPct = calculateWinningPct(totalCombos, team.combos, team.originalWinPct);
+		team.odds = calculateWinningPct(totalCombos, team.combos, team.originalWinPct);
 	});
 
 	return teams;
 }
+
+
+exports.revealWinningCombos = (teams, ballsDrawn) => {
+	teams.forEach((team) => {
+		if(team.combos > 0){
+			let winsWith = [];
+			for(let i = 0, combosLeft = team.winningCombos.length; i < combosLeft; i++){
+				let winningNumber = team.winningCombos[i].filter((el) =>{
+					return ballsDrawn.indexOf(el) < 0;
+				});
+
+				winsWith.push(winningNumber.join());
+			}
+			team.winsWith = winsWith.toString();
+		}
+	});
+
+	return teams;
+}
+
 
 
 function calculateWinningPct(totalCombos, teamCombos, originalWinPct) {
@@ -59,28 +79,6 @@ function calculateWinningPct(totalCombos, teamCombos, originalWinPct) {
 		combos : teamCombos
 	}
 }
-
-
-// exports.revealWinningCombos = () => {
-// 	settings.teams.forEach((team) => {
-
-// 		if(team.combosLeft > 0){
-// 			let winsWith = [];
-// 			console.log("-------------------------");
-// 			for(let i = 0, combosLeft = team.winningCombosLeft.length; i < combosLeft; i++){
-// 				console.log(team.winningCombosLeft[i]);
-// 				let winningNumber = team.winningCombosLeft[i].filter((el) =>{
-// 					return settings.lottery.ballsDrawn.indexOf(el) < 0;
-// 				});
-
-// 				winsWith.push(winningNumber.join());
-// 			}
-
-// 			console.log(winsWith);
-
-// 		}
-// 	});
-// }
 
 
 

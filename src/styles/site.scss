@@ -25,5 +25,9 @@ body{
     text-rendering: optimizeLegibility;
 }
 
+.hidden{
+	display:none !important;
+	visibility: hidden !important;
+}
 
 @import "partials/page";

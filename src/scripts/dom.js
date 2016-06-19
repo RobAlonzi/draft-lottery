@@ -15,10 +15,10 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 			   <th>Combos Remaining</th>`;
 			   
 
-	if(ballsDrawn > 0){
-		let NewRow = `<th>Original Odds</th>`;
-		row += NewRow;
-	}
+	// if(ballsDrawn > 0){
+	// 	let NewRow = `<th>Original Odds</th>`;
+	// 	row += NewRow;
+	// }
 
 	thead.innerHTML = `<tr>${row}</tr>`;
 
@@ -27,8 +27,8 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 	teams.forEach((team, i) => {
 		let name = team.name,
 			combos = team.combos,
-			winningPercentage = team.winningPct.percent,
-			winningPctChange = team.winningPct.change,
+			winningPercentage = team.odds.percent,
+			winningPctChange = team.odds.change,
 			oldWinningPcts = '';
 
 		// if(team.oldWinningPct){
@@ -39,25 +39,29 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 		// 	});
 		// }
 
-		let iconHTML = '';
+		let iconHTML = '',
+			winsWith = '';
 
 		if(ballsDrawn > 0){
 			let icon = winningPctChange > 0 ? 'up' : 'down';
 			iconHTML = `<i class="ion-arrow-${icon}-b" aria-hidden="true"></i>`;
 		}
 
+		if(team.winsWith && ballsDrawn === 3)
+			winsWith = `<p> Wins with: ${team.winsWith} </p>`;
+
 		
 		let row = `
 				<th scope="row">${i+1}</th>
 				<td>${name}</td>
-				<td>${combos} (${winningPercentage}% chance) ${iconHTML}</td>`;
+				<td>${combos} (${winningPercentage}% chance) ${iconHTML} ${winsWith}</td>`;
 
-		if(ballsDrawn > 0){
-			let originalCombos = team.originalWinPct.combos,
-				orignalWinningPercentage = team.originalWinPct.percent,
-				NewRow = `<td>${originalCombos} (${orignalWinningPercentage}% chance) </td>`;
-			row += NewRow;
-		}
+		// if(ballsDrawn > 0){
+		// 	let originalCombos = team.originalWinPct.combos,
+		// 		orignalWinningPercentage = team.originalWinPct.percent,
+		// 		NewRow = `<td>${originalCombos} (${orignalWinningPercentage}% chance) </td>`;
+		// 	row += NewRow;
+		// }
 
 
 
@@ -109,9 +113,13 @@ exports.showWinner = (round, team) => {
 	return true;
 }
 
-exports.reset = () => {
+exports.reset = (newRound) => {
 	document.getElementById('lottery-balls').innerHTML = "";
-	document.getElementsByClassName('winner')[0].innerHTML = "";
+
+	if(document.getElementsByClassName('winner')[0] && newRound !== true){
+		document.getElementsByClassName('winner')[0].parentNode.removeChild(document.getElementsByClassName('winner')[0]);
+	}
+
 
 	return true;
 }

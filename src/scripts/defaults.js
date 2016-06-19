@@ -1,6 +1,30 @@
 module.exports = exports = {};
 
-exports.Defaults  = {
+
+exports.getDefaults = () => {
+	return JSON.parse(JSON.stringify(Defaults));
+}
+
+exports.setLottery = (lottery) => {
+	Defaults.lottery = JSON.parse(JSON.stringify(lottery));
+	return true;
+}
+
+exports.getLottery = () => {
+	return JSON.parse(JSON.stringify(Defaults.lottery));
+}
+
+
+exports.setCombos = (teams) => {
+	Defaults.teams = JSON.parse(JSON.stringify(teams));
+	return true;
+}
+
+exports.getCombos = () => {
+	return JSON.parse(JSON.stringify(Defaults.teams));
+}
+
+let Defaults  = {
 	title: "OTHL Draft Lottery",
 	description: "Lottery Description",
 	lottery: {

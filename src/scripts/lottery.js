@@ -88,3 +88,26 @@ exports.drawBall = (range) => {
 };
 
 
+exports.resetCombos = (teams) => {
+	teams.forEach((team) => {
+		team.winningCombos = team.winningCombos.concat(team.losingCombos);
+		team.losingCombos = [];
+	});
+
+	return teams;
+};
+
+
+exports.removeWinner = (teams) => {
+
+	console.log(teams[0]);
+	console.log(teams[teams.length - 1]);
+
+	let winningCombos = teams[0].winningCombos,
+		redrawCombos = teams[teams.length - 1].winningCombos;
+
+	teams[teams.length - 1].winningCombos = redrawCombos.concat(winningCombos);
+	teams.shift();
+
+	return teams;
+}
