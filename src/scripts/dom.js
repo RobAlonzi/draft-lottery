@@ -2,8 +2,12 @@ module.exports = exports = {};
 
 
 exports.setupOddsChart = (teams, ballsDrawn) => {
-	
-	document.getElementById('odds').innerHTML = "";
+
+	if(document.getElementsByTagName("table")[0]){
+		document.getElementsByTagName("table")[0].parentElement.removeChild(document.getElementsByTagName("table")[0]);
+	}
+
+
 	let table = document.createElement('table'),
 		thead = document.createElement('thead'),
 		tbody = document.createElement('tbody');
@@ -13,12 +17,7 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 	let row = `<th>#</th>
 			   <th>Team</th>
 			   <th>Combos Remaining</th>`;
-			   
-
-	// if(ballsDrawn > 0){
-	// 	let NewRow = `<th>Original Odds</th>`;
-	// 	row += NewRow;
-	// }
+			  
 
 	thead.innerHTML = `<tr>${row}</tr>`;
 
@@ -30,14 +29,6 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 			winningPercentage = team.odds.percent,
 			winningPctChange = team.odds.change,
 			oldWinningPcts = '';
-
-		// if(team.oldWinningPct){
-		// 	team.oldWinningPct.forEach((pct) => {
-
-		// 		let icon = pct.change > 0 ? 'up' : 'down';
-		// 		oldWinningPcts += `<td>${pct.combos} (<i class="ion-arrow-${icon}-b" aria-hidden="true"></i> ${pct.percent}% chance) </td>`;
-		// 	});
-		// }
 
 		let iconHTML = '',
 			winsWith = '';
@@ -55,14 +46,6 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 				<th scope="row">${i+1}</th>
 				<td>${name}</td>
 				<td>${combos} (${winningPercentage}% chance) ${iconHTML} ${winsWith}</td>`;
-
-		// if(ballsDrawn > 0){
-		// 	let originalCombos = team.originalWinPct.combos,
-		// 		orignalWinningPercentage = team.originalWinPct.percent,
-		// 		NewRow = `<td>${originalCombos} (${orignalWinningPercentage}% chance) </td>`;
-		// 	row += NewRow;
-		// }
-
 
 
 		tbody.innerHTML += document.createElement('tr').innerHTML = row;
@@ -96,28 +79,79 @@ exports.createLotteryBall = (number) => {
 }
 
 
-
 exports.showWinner = (round, team) => {
 	let div = document.createElement('div'),
-		odds = document.getElementById('odds'),
-		container = document.getElementsByClassName('container')[0];
+		container = document.getElementById('winner-list');
 
-	div.className = "row winner";
-	div.innerHTML = `<div class="col-xs-12 col-lg-3">
-	<h2>Pick #${round}</h2>
-	<span>${team.name}</span>
-	</div>`;
+	div.className = "col-xs-12 col-lg-4";
+	div.innerHTML = `<h2>Pick #${round}</h2>
+	<span>${team.name}</span>`;
 
-	container.insertBefore(div, odds);
+	container.appendChild(div);
 
 	return true;
 }
 
+exports.createAlert = (message) => {
+	let container = document.getElementsByClassName('container')[0],
+		div = document.createElement('div');
+	div.id = "alert-box";
+	div.className = "alert alert-danger";
+	div.setAttribute("role", "alert");
+	div.innerHTML = message;
+
+
+	container.insertBefore(div, container.firstChild);
+
+	return true;
+
+}
+
+exports.showFinalOrder = (teams, pickStart) => {
+	document.getElementById('odds').innerHTML = "";
+
+	let table = document.createElement('table'),
+		thead = document.createElement('thead'),
+		tbody = document.createElement('tbody');
+
+	table.className = "table";
+
+	let row = `<th>Pick #</th>
+			   <th>Team</th>
+			   <th>Change</th>`;
+			  
+
+	thead.innerHTML = `<tr>${row}</tr>`;
+
+	table.appendChild(thead);
+
+	teams.forEach((team, i) => {
+
+		let row = `
+				<th scope="row">${i+pickStart}</th>
+				<td>${team.name}</td>
+				<td>${team.placeChange}</td>`;
+
+
+		tbody.innerHTML += document.createElement('tr').innerHTML = row;
+		table.appendChild(tbody);
+	});
+
+	document.getElementById('odds').appendChild(table);
+	return true;
+
+}
+
 exports.reset = (newRound) => {
 	document.getElementById('lottery-balls').innerHTML = "";
+ 	
+	if(document.getElementById("alert-box")){
+		document.getElementById("alert-box").parentElement.removeChild(document.getElementById("alert-box"));
+	}
 
-	if(document.getElementsByClassName('winner')[0] && newRound !== true){
-		document.getElementsByClassName('winner')[0].parentNode.removeChild(document.getElementsByClassName('winner')[0]);
+
+	if(document.getElementById('winner-list') && newRound !== true){
+		document.getElementById('winner-list').innerHTML = "";
 	}
 
 

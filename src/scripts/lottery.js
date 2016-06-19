@@ -81,13 +81,6 @@ exports.assignCombos = (combos, teams) => {
 }
 
 
-exports.drawBall = (range) => {
-	let indexDrawn = Math.floor(Math.random() * range.length);
-	let ballChosen = range[indexDrawn];
-	return ballChosen;
-};
-
-
 exports.resetCombos = (teams) => {
 	teams.forEach((team) => {
 		team.winningCombos = team.winningCombos.concat(team.losingCombos);
@@ -99,15 +92,139 @@ exports.resetCombos = (teams) => {
 
 
 exports.removeWinner = (teams) => {
-
-	console.log(teams[0]);
-	console.log(teams[teams.length - 1]);
-
 	let winningCombos = teams[0].winningCombos,
 		redrawCombos = teams[teams.length - 1].winningCombos;
-
 	teams[teams.length - 1].winningCombos = redrawCombos.concat(winningCombos);
 	teams.shift();
+	return teams;
+}
+
+
+exports.drawBall = (lottery) => {
+	let ballDrawn = drawBall(lottery.ballRange);
+	let ballDrawnIndex = lottery.ballRange.indexOf(ballDrawn);
+
+	lottery.mostRecentBallDrawn = ballDrawn;
+	lottery.ballRange.splice(ballDrawnIndex, 1);
+	lottery.ballsDrawn.push(ballDrawn);
+
+
+	return lottery;
+}
+
+
+exports.endLottery = (teams, lottery) => {
+	teams.pop();
+	teams.shift();
+
+
+	teams.forEach((team, i) => {
+		//i + lottery.rounds + 1 is trying to get the highest non-lottery postition
+		team.placeChange = getPlaceChange(team, (i + lottery.rounds + 1))
+	});
+
+	console.log(teams);
 
 	return teams;
+}
+
+
+function drawBall(range){
+	let indexDrawn = Math.floor(Math.random() * range.length);
+	let ballChosen = range[indexDrawn];
+	return ballChosen;
+}
+
+function getPlaceChange(team, place){
+	return team.originalStats.pick - place;
+}
+
+
+/* -----------------------------------------------------------------------
+	--------------------------------------------------------------------- */
+
+
+exports.updateOdds = (teams, lottery, reveal) => {
+	let ballDrawn = lottery.mostRecentBallDrawn,
+		ballsDrawn = lottery.ballsDrawn;
+
+	teams.forEach((team) => {
+		team = removeLosingCombos(team, ballDrawn);
+
+		if(reveal)
+			team.winsWith = revealWinningCombos(team, ballsDrawn);
+	});
+
+	let totalCombos = countCombosRemaining(teams);
+
+	teams.forEach((team) => {
+		team.odds = calculateWinningPct(team.combos, totalCombos);
+	});
+
+	return teams;
+}
+
+
+exports.calculateWinningPct = (totalCombos, teams) => {
+	teams.forEach((team) => {
+		team.odds = calculateWinningPct(team.combos, totalCombos);
+	});
+
+	return teams;
+};
+
+
+
+
+function removeLosingCombos(team, ballDrawn){
+	//start removing winning combos into losing combos
+	let tmpWinningCombos = [];
+
+	for(let i = 0, combos = team.winningCombos.length; i < combos; i++){
+		if(team.winningCombos[i].indexOf(ballDrawn) === -1){
+			team.losingCombos.push(team.winningCombos[i]);
+		}else{
+			tmpWinningCombos.push(team.winningCombos[i]);
+		}
+	}
+
+	team.winningCombos = tmpWinningCombos;
+	team.combos = team.winningCombos.length;
+
+	return team;
+}
+
+function revealWinningCombos(team, ballsDrawn){
+	if(team.combos > 0){
+		let winsWith = [];
+		for(let i = 0, combosLeft = team.winningCombos.length; i < combosLeft; i++){
+			let winningNumber = team.winningCombos[i].filter((el) =>{
+				return ballsDrawn.indexOf(el) < 0;
+			});
+
+			winsWith.push(winningNumber.join());
+		}
+		
+		return winsWith.toString();
+	}
+
+	return null;
+}
+
+function countCombosRemaining(teams) {
+	let combos = 0;
+	teams.forEach((team) => {
+		combos += team.combos;
+	});
+
+	return combos;
+}
+
+
+function calculateWinningPct(teamCombos, totalCombos){
+	let winPct = (teamCombos / totalCombos * 100).toFixed(1);
+	return{
+			percent: winPct,
+			combos : teamCombos
+		};
 }

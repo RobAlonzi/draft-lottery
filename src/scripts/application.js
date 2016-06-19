@@ -3,7 +3,6 @@
 */
 import "../styles/site.scss";
 import Defaults from "./defaults.js";
-import Odds from "./odds.js";
 import Lottery from "./lottery.js";
 import HTMLCreate from "./dom.js";
 
@@ -49,7 +48,7 @@ function makeCombosAndAssign() {
 
 function initHTML() {
 	//calculate initial winning pct and sort
-	teams = Odds.calculateWinningPct(lottery.combosRemaining, teams);
+	teams = Lottery.calculateWinningPct(lottery.combosRemaining, teams);
 	teams = teams.sort(sortTeams);
 
 	//Create the HTML for the odds chart
@@ -61,30 +60,48 @@ function initHTML() {
 //TO-DO : Too much logic in here. Esp the odds recaulculating
 document.getElementById("draw-btn").addEventListener("click", () => {
 	//counter for how many balls we've picked this round
+	let revealWinningCombos = false;
 	ballsDrawn++;
-	//draw ball and assign it, also get the index and 
-	//remove it from the ballRange array and into ballsDrawn
-	let ballDrawn = Lottery.drawBall(lottery.ballRange);
-	let ballDrawnIndex = lottery.ballRange.indexOf(ballDrawn);
-	lottery.ballRange.splice(ballDrawnIndex, 1);
-	lottery.ballsDrawn.push(ballDrawn);
-	
+
+	if(ballsDrawn > 4)
+		return;
+
+	if(ballsDrawn === (lottery.ballsDrawnPerRound - 1)){
+		revealWinningCombos = true;
+	}
+
+	//draw ball and update arrays
+	lottery = Lottery.drawBall(lottery);
+
 	//create the HTML for the lottery ball on the page
-	HTMLCreate.createLotteryBall(ballDrawn);
+	HTMLCreate.createLotteryBall(lottery.mostRecentBallDrawn);
+
 
 	//recalculate odds and sort
-	teams = Odds.updateCombosAndWinPct(teams, ballDrawn);
+	teams = Lottery.updateOdds(teams, lottery, revealWinningCombos);
 	teams = teams.sort(sortTeams);
 
 
-	if(ballsDrawn === 3){
-		teams = Odds.revealWinningCombos(teams, lottery.ballsDrawn);
-	}
-
-	if(ballsDrawn === 4){
-		HTMLCreate.showWinner(round, teams[0], lottery.ballsDrawn);
+	if(ballsDrawn === lottery.ballsDrawnPerRound){
 		document.getElementById("draw-btn").classList.add("hidden");
 		document.getElementById("start-btn").classList.remove("hidden");
+
+		if(teams[0].name === "Redraw"){
+			HTMLCreate.createAlert("Redraw combo has been selected. Please start the round over.");
+		}else{
+			HTMLCreate.showWinner(round, teams[0], lottery.ballsDrawn);
+
+			if(round === lottery.rounds){
+				document.getElementById("start-btn").classList.add("hidden");
+				document.getElementById("draw-btn").classList.add("hidden");
+				teams = Lottery.endLottery(teams, lottery);
+
+				HTMLCreate.showFinalOrder(teams, (lottery.rounds + 1));
+				return;
+
+			}
+		}
+
 	}
 
 
@@ -94,14 +111,18 @@ document.getElementById("draw-btn").addEventListener("click", () => {
 
 });
 
+
 document.getElementById("start-btn").addEventListener("click", () => {
 	ballsDrawn = 0;
-	round++; 
 	document.getElementById("start-btn").classList.add("hidden");
 	document.getElementById("draw-btn").classList.remove("hidden");
 
 	teams = Lottery.resetCombos(teams);
-	teams = Lottery.removeWinner(teams);
+
+	if(teams[0].name !== "Redraw"){
+		round++; 
+		teams = Lottery.removeWinner(teams);
+	}
 
 	teams.forEach((team) => {
 		team.winsWith = null,
@@ -123,15 +144,14 @@ document.getElementById("reset-btn").addEventListener("click", () => {
 	ballsDrawn = 0,
 	round = 1;
 
+	document.getElementById("start-btn").classList.add("hidden");
+	document.getElementById("draw-btn").classList.remove("hidden");
+
 	HTMLCreate.reset();
 
-	console.log(settings);
 
 	initHTML();
 });
-
-
-
 
 
 
@@ -146,7 +166,8 @@ function shuffleArray(array) {
 }
 
 
-function sortTeams(a, b){
+function sortTeams(a, b){1
+
 	if(a.combos > b.combos)
 		return -1;
 	if(a.combos < b.combos)
@@ -155,9 +176,9 @@ function sortTeams(a, b){
 		return 1;
 	if(b.name === "Redraw")
 		return -1;
-	if(a.originalWinPct.combos > b.originalWinPct.combos)
+	if(a.originalStats.combos > b.originalStats.combos)
 		return -1;
-	if(a.originalWinPct.combos < b.originalWinPct.combos)
+	if(a.originalStats.combos < b.originalStats.combos)
 		return 1;
 	return 0;
 }

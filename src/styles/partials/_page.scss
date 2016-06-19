@@ -9,6 +9,11 @@ header{
 	}
 }
 
+.alert-danger{
+	margin:20px 0;
+}
+
+
 
 .lottery-balls, .odds, .buttons, .settings{ margin-top:40px; }
 
@@ -55,5 +60,11 @@ header{
 				display: block;
 			}
 		}
+	}
+}
+
+.winner{
+	div{
+		display:inline-block;
 	}
 }
