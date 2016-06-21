@@ -2,40 +2,46 @@ module.exports = exports = {};
 
 
 exports.setupOddsChart = (teams, ballsDrawn) => {
+	let showExtraColumns = false;
 
 	if(document.getElementsByTagName("table")[0]){
 		document.getElementsByTagName("table")[0].parentElement.removeChild(document.getElementsByTagName("table")[0]);
 	}
+
+	if(ballsDrawn > 0)
+		showExtraColumns = true;
 
 
 	let table = document.createElement('table'),
 		thead = document.createElement('thead'),
 		tbody = document.createElement('tbody');
 
-	table.className = "table";
+	table.className = "table table-striped table-hover";
 
 	let row = `<th>#</th>
 			   <th>Team</th>
 			   <th>Combos Remaining</th>`;
-			  
+
+	if(showExtraColumns){
+		row += `<th>Change from Original</th>`;
+	}		   
+	
+	row += `<td>&nbsp;</td>`;		  
 
 	thead.innerHTML = `<tr>${row}</tr>`;
-
 	table.appendChild(thead);
 
+
 	teams.forEach((team, i) => {
-		let name = team.name,
-			combos = team.combos,
-			winningPercentage = team.odds.percent,
-			winningPctChange = team.odds.change,
-			oldWinningPcts = '';
 
 		let iconHTML = '',
 			winsWith = '';
 
 		if(ballsDrawn > 0){
-			let icon = winningPctChange > 0 ? 'up' : 'down';
-			iconHTML = `<i class="ion-arrow-${icon}-b" aria-hidden="true"></i>`;
+			let change = -1 > 0 ? 'up' : 'down';
+
+
+			iconHTML = `<td class="change-${change}"><i class="ion-arrow-${change}-a" aria-hidden="true"></i> 4.2%</td>`;
 		}
 
 		if(team.winsWith && ballsDrawn === 3)
@@ -44,11 +50,20 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 		
 		let row = `
 				<th scope="row">${i+1}</th>
-				<td>${name}</td>
-				<td>${combos} (${winningPercentage}% chance) ${iconHTML} ${winsWith}</td>`;
+				<td>${team.name}</td>
+				<td>${team.combos} (${team.odds.percent}% chance) ${winsWith}</td>
+				${iconHTML} 
+				<td><a href="javascript:;">View Details</a></td>`;
 
 
-		tbody.innerHTML += document.createElement('tr').innerHTML = row;
+		let tr = document.createElement('tr');
+
+		if(team.combos === 0){
+			console.log('no chance: ' + team.name);
+			tr.className = 'no-chance';
+		}
+
+		tbody.innerHTML += tr.innerHTML = row;
 		table.appendChild(tbody);
 
 	});
@@ -83,7 +98,7 @@ exports.showWinner = (round, team) => {
 	let div = document.createElement('div'),
 		container = document.getElementById('winner-list');
 
-	div.className = "col-xs-12 col-lg-4";
+	div.className = `winner-round-${round}`;
 	div.innerHTML = `<h2>Pick #${round}</h2>
 	<span>${team.name}</span>`;
 
@@ -114,7 +129,7 @@ exports.showFinalOrder = (teams, pickStart) => {
 		thead = document.createElement('thead'),
 		tbody = document.createElement('tbody');
 
-	table.className = "table";
+	table.className = "table table-striped table-hover";
 
 	let row = `<th>Pick #</th>
 			   <th>Team</th>
@@ -126,11 +141,17 @@ exports.showFinalOrder = (teams, pickStart) => {
 	table.appendChild(thead);
 
 	teams.forEach((team, i) => {
+		let change = team.placeChange > 0 ? 'up' : 'down';
+			change = team.placeChange === 0 ? 'none' : change;
+		let icon = '';
 
+		if(change !== 'none')
+			icon = `<i class="ion-arrow-${change}-a" aria-hidden="true"></i>`;
+			
 		let row = `
 				<th scope="row">${i+pickStart}</th>
 				<td>${team.name}</td>
-				<td>${team.placeChange}</td>`;
+				<td class="change-${change}">${icon} ${team.placeChange}</td>`;
 
 
 		tbody.innerHTML += document.createElement('tr').innerHTML = row;
@@ -141,6 +162,8 @@ exports.showFinalOrder = (teams, pickStart) => {
 	return true;
 
 }
+
+
 
 exports.reset = (newRound) => {
 	document.getElementById('lottery-balls').innerHTML = "";

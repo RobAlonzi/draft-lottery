@@ -36,7 +36,7 @@ let Defaults  = {
 	},
 	teams: [
 	{
-		name: "Toronto Maple Leafs",
+		name: "Montreal Canadiens",
 		combos: 200,
 		originalStats: {
 			pick: 1,
@@ -44,7 +44,7 @@ let Defaults  = {
 			pct: 20
 		}
 	},{
-		name: "Edmonton Oilers",
+		name: "Vancouver Canucks",
 		combos: 135,
 		originalStats: {
 			pick: 2,
@@ -52,7 +52,7 @@ let Defaults  = {
 			pct: 13.5
 		}
 	},{
-		name: "Vancouver Canucks",
+		name: "Winnipeg Jets",
 		combos: 115,
 		originalStats: {
 			pick: 3,
@@ -60,7 +60,7 @@ let Defaults  = {
 			pct: 11.5
 		}
 	},{
-		name: "Columbus Blue Jackets",
+		name: "Detroit Red Wings",
 		combos: 95,
 		originalStats: {
 			pick: 4,
@@ -68,7 +68,7 @@ let Defaults  = {
 			pct: 9.5
 		}
 	},{
-		name: "Calgary Flames",
+		name: "New York Rangers",
 		combos: 85,
 		originalStats: {
 			pick: 5,
@@ -76,7 +76,7 @@ let Defaults  = {
 			pct: 8.5
 		}
 	},{
-		name: "Winnipeg Jets",
+		name: "New York Islanders",
 		combos: 75,
 		originalStats: {
 			pick: 6,
@@ -84,7 +84,7 @@ let Defaults  = {
 			pct: 7.5
 		}
 	},{
-		name: "Arizona Coyotes",
+		name: "Columbus Blue Jackets",
 		combos: 65,
 		originalStats: {
 			pick: 7,
@@ -92,7 +92,7 @@ let Defaults  = {
 			pct: 6.5
 		}
 	},{
-		name: "Buffalo Sabres",
+		name: "Philadelphia Flyers",
 		combos: 60,
 		originalStats: {
 			pick: 8,
@@ -100,7 +100,7 @@ let Defaults  = {
 			pct: 6
 		}
 	},{
-		name: "Montreal Canadiens",
+		name: "Los Angeles Kings",
 		combos: 50,
 		originalStats: {
 			pick: 9,
@@ -108,7 +108,7 @@ let Defaults  = {
 			pct: 5
 		}
 	},{
-		name: "New Jersey Devils",
+		name: "St. Louis Blues",
 		combos: 35,
 		originalStats: {
 			pick: 10,
@@ -116,7 +116,7 @@ let Defaults  = {
 			pct: 3.5
 		}
 	},{
-		name: "Colorado Avalanche",
+		name: "Arizona Coyotes",
 		combos: 30,
 		originalStats: {
 			pick: 11,
@@ -140,7 +140,7 @@ let Defaults  = {
 			pct: 2
 		}
 	},{
-		name: "Boston Bruins",
+		name: "Calgary Flames",
 		combos: 10,
 		originalStats: {
 			pick: 14,

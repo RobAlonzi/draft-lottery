@@ -63,7 +63,7 @@ document.getElementById("draw-btn").addEventListener("click", () => {
 	let revealWinningCombos = false;
 	ballsDrawn++;
 
-	if(ballsDrawn > 4)
+	if(ballsDrawn > lottery.ballsDrawnPerRound)
 		return;
 
 	if(ballsDrawn === (lottery.ballsDrawnPerRound - 1)){
