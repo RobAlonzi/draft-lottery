@@ -37,11 +37,9 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 		let iconHTML = '',
 			winsWith = '';
 
-		if(ballsDrawn > 0){
-			let change = -1 > 0 ? 'up' : 'down';
-
-
-			iconHTML = `<td class="change-${change}"><i class="ion-arrow-${change}-a" aria-hidden="true"></i> 4.2%</td>`;
+		if(showExtraColumns){
+			let change = team.odds.change > 0 ? 'up' : 'down';
+			iconHTML = `<td class="change-${change}"><i class="ion-arrow-${change}-a" aria-hidden="true"></i> ${team.odds.change}%</td>`;
 		}
 
 		if(team.winsWith && ballsDrawn === 3)
@@ -56,14 +54,15 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 				<td><a href="javascript:;">View Details</a></td>`;
 
 
-		let tr = document.createElement('tr');
+		let tblRow = document.createElement('tr');
 
 		if(team.combos === 0){
-			console.log('no chance: ' + team.name);
-			tr.className = 'no-chance';
+			tblRow.className = 'no-chance';
 		}
 
-		tbody.innerHTML += tr.innerHTML = row;
+		tblRow.innerHTML = row;
+
+		tbody.appendChild(tblRow);
 		table.appendChild(tbody);
 
 	});
@@ -74,7 +73,7 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 
 
 
-exports.createLotteryBall = (number) => {
+exports.createLotteryBall = (number, returnToCaller) => {
 
 	let numberSpan = document.createElement('span'),
 	ballDiv = document.createElement('div'),
@@ -87,20 +86,31 @@ exports.createLotteryBall = (number) => {
 	ballDiv.appendChild(numberSpan);
 	containerDiv.appendChild(ballDiv);
 
-	document.getElementById('lottery-balls').appendChild(containerDiv);
 
-	return true;
+	if(!returnToCaller){
+		document.getElementById('lottery-balls').appendChild(containerDiv);
+		return true;
+	}
+	
+	return containerDiv.innerHTML;
+
 
 }
 
 
-exports.showWinner = (round, team) => {
+exports.showWinner = (round, team, ballsDrawn) => {
 	let div = document.createElement('div'),
-		container = document.getElementById('winner-list');
+		container = document.getElementById('winner-list'),
+		winningBalls = '';
 
-	div.className = `winner-round-${round}`;
+	ballsDrawn.forEach((ball) => {
+		winningBalls += exports.createLotteryBall(ball, true);
+	});
+
+	div.className = `winning-team`;
 	div.innerHTML = `<h2>Pick #${round}</h2>
-	<span>${team.name}</span>`;
+	<span>${team.name}</span>
+	<div class="winning-balls">${winningBalls}</div>`;
 
 	container.appendChild(div);
 

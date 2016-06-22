@@ -35,7 +35,7 @@ exports.getAvailableCombos = (range, draws) => {
 }
 
 
-exports.setRedrawCombos = (combos, teams) => {
+exports.setRedrawCombos = (combos, teams, lottery) => {
 	let nonRedrawComboLength = 0,
 		redrawCombos = [];
 
@@ -48,9 +48,17 @@ exports.setRedrawCombos = (combos, teams) => {
 	}
 
 	if(redrawCombos.length > 0){
+
+		let pct = calculateWinningPct(redrawCombos.length, lottery.combosRemaining, 0.1);
+
 		return {
 			name: "Redraw",
 			combos: redrawCombos.length,
+			originalStats: {
+				pick: (teams.length + 1),
+				combos: redrawCombos.length,
+				pct: pct.percent
+			},
 			winningCombos: redrawCombos,
 			losingCombos: []
 		}
@@ -91,11 +99,17 @@ exports.resetCombos = (teams) => {
 };
 
 
-exports.removeWinner = (teams) => {
+exports.removeWinner = (teams, lottery) => {
 	let winningCombos = teams[0].winningCombos,
 		redrawCombos = teams[teams.length - 1].winningCombos;
 	teams[teams.length - 1].winningCombos = redrawCombos.concat(winningCombos);
 	teams.shift();
+
+	let pct = calculateWinningPct(teams[teams.length - 1].winningCombos.length, lottery.combosRemaining, 0);
+	teams[teams.length - 1].originalStats.combos = teams[teams.length - 1].winningCombos.length;
+	teams[teams.length - 1].originalStats.pct = pct.percent;
+
+
 	return teams;
 }
 
@@ -117,13 +131,10 @@ exports.endLottery = (teams, lottery) => {
 	teams.pop();
 	teams.shift();
 
-
 	teams.forEach((team, i) => {
 		//i + lottery.rounds + 1 is trying to get the highest non-lottery postition
 		team.placeChange = getPlaceChange(team, (i + lottery.rounds + 1))
 	});
-
-	console.log(teams);
 
 	return teams;
 }
@@ -158,7 +169,7 @@ exports.updateOdds = (teams, lottery, reveal) => {
 	let totalCombos = countCombosRemaining(teams);
 
 	teams.forEach((team) => {
-		team.odds = calculateWinningPct(team.combos, totalCombos);
+		team.odds = calculateWinningPct(team.combos, totalCombos, team.originalStats.pct);
 	});
 
 	return teams;
@@ -167,7 +178,7 @@ exports.updateOdds = (teams, lottery, reveal) => {
 
 exports.calculateWinningPct = (totalCombos, teams) => {
 	teams.forEach((team) => {
-		team.odds = calculateWinningPct(team.combos, totalCombos);
+		team.odds = calculateWinningPct(team.combos, totalCombos, team.originalStats.pct);
 	});
 
 	return teams;
@@ -221,10 +232,13 @@ function countCombosRemaining(teams) {
 }
 
 
-function calculateWinningPct(teamCombos, totalCombos){
-	let winPct = (teamCombos / totalCombos * 100).toFixed(1);
+function calculateWinningPct(teamCombos, totalCombos, originalPct){
+	let winPct = (teamCombos / totalCombos * 100).toFixed(1),
+		change = (winPct - originalPct).toFixed(1);
+
 	return{
 			percent: winPct,
-			combos : teamCombos
+			combos : teamCombos,
+			change: change
 		};
 }

@@ -28,7 +28,7 @@ function makeCombosAndAssign() {
 	lottery.combosRemaining = availableCombos.length;
 	//the last X combos will be the re-draw ones. Add them to the list of teams 
 	//and subtract those combos from the pool (only if needed).
-	let redrawCombos = Lottery.setRedrawCombos(availableCombos, teams);
+	let redrawCombos = Lottery.setRedrawCombos(availableCombos, teams, lottery);
 	if(redrawCombos){
 		availableCombos.splice(availableCombos.length - redrawCombos.combos, redrawCombos.combos);
 		teams.push(redrawCombos);
@@ -89,7 +89,13 @@ document.getElementById("draw-btn").addEventListener("click", () => {
 		if(teams[0].name === "Redraw"){
 			HTMLCreate.createAlert("Redraw combo has been selected. Please start the round over.");
 		}else{
+			
+			lottery.ballsDrawn.sort(function(a, b) {
+			  return a - b;
+			});
+
 			HTMLCreate.showWinner(round, teams[0], lottery.ballsDrawn);
+
 
 			if(round === lottery.rounds){
 				document.getElementById("start-btn").classList.add("hidden");
@@ -103,7 +109,6 @@ document.getElementById("draw-btn").addEventListener("click", () => {
 		}
 
 	}
-
 
 	//recreate the odds chart
 	HTMLCreate.setupOddsChart(teams, ballsDrawn);
@@ -121,7 +126,7 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
 	if(teams[0].name !== "Redraw"){
 		round++; 
-		teams = Lottery.removeWinner(teams);
+		teams = Lottery.removeWinner(teams, lottery);
 	}
 
 	teams.forEach((team) => {
@@ -166,8 +171,7 @@ function shuffleArray(array) {
 }
 
 
-function sortTeams(a, b){1
-
+function sortTeams(a, b){
 	if(a.combos > b.combos)
 		return -1;
 	if(a.combos < b.combos)
