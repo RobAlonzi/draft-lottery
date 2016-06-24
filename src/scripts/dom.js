@@ -45,13 +45,21 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 		if(team.winsWith && ballsDrawn === 3)
 			winsWith = `<p> Wins with: ${team.winsWith} </p>`;
 
-		
+
+		let detailsBtn = document.createElement('button');
+		detailsBtn.className = "btn btn-info-outline details-btn";
+		detailsBtn.innerHTML = "View Details";
+
+		//let teamValue = document.createAttribute("team").value = team;
+		detailsBtn.setAttribute("team", i); 
+
+
 		let row = `
-				<th scope="row">${i+1}</th>
-				<td>${team.name}</td>
-				<td>${team.combos} (${team.odds.percent}% chance) ${winsWith}</td>
-				${iconHTML} 
-				<td><a href="javascript:;">View Details</a></td>`;
+		<th scope="row">${i+1}</th>
+		<td>${team.name}</td>
+		<td>${team.combos} (${team.odds.percent}% chance) ${winsWith}</td>
+		${iconHTML} 
+		<td>${detailsBtn.outerHTML}</td>`;
 
 
 		let tblRow = document.createElement('tr');
@@ -68,6 +76,7 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 	});
 
 	document.getElementById('odds').appendChild(table);
+
 	return true;
 };
 
@@ -190,3 +199,5 @@ exports.reset = (newRound) => {
 
 	return true;
 }
+
+

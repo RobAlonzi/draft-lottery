@@ -5,6 +5,7 @@ import "../styles/site.scss";
 import Defaults from "./defaults.js";
 import Lottery from "./lottery.js";
 import HTMLCreate from "./dom.js";
+import Modal from "./modal.js";
 
 //copy defaults so we can reset quick if needed
 
@@ -53,6 +54,9 @@ function initHTML() {
 
 	//Create the HTML for the odds chart
 	HTMLCreate.setupOddsChart(teams, ballsDrawn);	
+
+	let tableDetailBtns = document.getElementsByClassName("details-btn");
+	addEventListenerList(tableDetailBtns, 'click', showDetails);
 }
 
 
@@ -89,7 +93,7 @@ document.getElementById("draw-btn").addEventListener("click", () => {
 		if(teams[0].name === "Redraw"){
 			HTMLCreate.createAlert("Redraw combo has been selected. Please start the round over.");
 		}else{
-			
+
 			lottery.ballsDrawn.sort(function(a, b) {
 			  return a - b;
 			});
@@ -112,6 +116,9 @@ document.getElementById("draw-btn").addEventListener("click", () => {
 
 	//recreate the odds chart
 	HTMLCreate.setupOddsChart(teams, ballsDrawn);
+
+	let tableDetailBtns = document.getElementsByClassName("details-btn");
+	addEventListenerList(tableDetailBtns, 'click', showDetails);
 
 
 });
@@ -160,6 +167,8 @@ document.getElementById("reset-btn").addEventListener("click", () => {
 
 
 
+
+
 function shuffleArray(array) {
 	for(let i = array.length - 1; i > 0; i--){
 	    let j = Math.floor(Math.random() * (i + 1));
@@ -185,4 +194,26 @@ function sortTeams(a, b){
 	if(a.originalStats.combos < b.originalStats.combos)
 		return 1;
 	return 0;
+}
+
+
+
+
+function showDetails(){
+	const team = this.getAttribute("team");
+
+	//Modal.create(teams[team]);
+
+
+	var modal = document.getElementsByClassName('modal')[0];
+	modal.style.display = "block";
+
+
+} 
+
+
+function addEventListenerList(list, event, fn) {
+    for (var i = 0, len = list.length; i < len; i++) {
+        list[i].addEventListener(event, fn, false);
+    }
 }
