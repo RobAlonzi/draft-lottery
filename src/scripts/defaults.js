@@ -116,7 +116,7 @@ let Defaults  = {
 			pct: 3.5
 		}
 	},{
-		name: "Arizona Coyotes",
+		name: "Ottawa Senators",
 		combos: 30,
 		originalStats: {
 			pick: 11,
@@ -124,7 +124,7 @@ let Defaults  = {
 			pct: 3
 		}
 	},{
-		name: "Ottawa Senators",
+		name: "Arizona Coyotes",
 		combos: 25,
 		originalStats: {
 			pick: 12,

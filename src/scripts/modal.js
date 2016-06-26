@@ -1,34 +1,61 @@
+import HTMLCreate from "./dom.js";
+
 module.exports = exports = {};
 
-let closeButton = null,
-	modal = null,
-    overlay = null,
-    options = null;
+const modal = document.getElementsByClassName('modal')[0],
+	  modalContent = modal.children[0];
+
+exports.create = (team) => {
+	let div = document.createElement('div'),
+		listDiv = document.createElement('div'),
+		winningComboList = document.createElement('ul'),
+		losingComboList = document.createElement('ul');
+
+	div.className = "modal-team-overview row";
+	listDiv.className = "modal-team-lists row";
+
+	div.innerHTML = `
+					<div class="col-xs-12 col-md-6 col-md-offset-3 text-xs-center">
+						<span class="modal-team-name">${team.name}</span>
+						<span class="modal-team-combos">Original Combos: ${team.originalStats.combos} (${team.originalStats.pct}%)</span>
+					</div>
+	`;
+
+	
+	team.winningCombos.forEach((combo) => {
+		let HTMLCombo = "";
+		combo.forEach((ball) => {
+			HTMLCombo += HTMLCreate.createLotteryBall(ball, true);
+		});
+		let li = `<li>${HTMLCombo}</li>`;
+		winningComboList.innerHTML += li;
+	});
 
 
-let defaults = {
-  className: 'fade-and-drop',
-  closeButton: true,
-  content: "",
-  maxWidth: 600,
-  minWidth: 280,
-  overlay: true
+	team.losingCombos.forEach((combo) => {
+		let HTMLCombo = "";
+		combo.forEach((ball) => {
+			HTMLCombo += HTMLCreate.createLotteryBall(ball, true);
+		});
+		let li = `<li>${HTMLCombo}</li>`;
+		losingComboList.innerHTML += li;
+	});
+
+	listDiv.innerHTML = `
+			<div class="col-xs-12 col-md-6">${winningComboList.outerHTML}</div>
+			<div class="col-xs-12 col-md-6 losing-list">${winningComboList.outerHTML}</div>	
+	`;
+
+
+	
+	modalContent.appendChild(div);
+	modalContent.appendChild(listDiv);
+	modal.style.display = "block";
 }
 
 
-exports.create = () => {
-	if (arguments[0] && typeof arguments[0] === "object") {
-      	options = extendDefaults(defaults, arguments[0]);
-    }
-}
-
-
-function extendDefaults(source, properties) {
-    let property;
-    for (property in properties) {
-      if (properties.hasOwnProperty(property)) {
-        source[property] = properties[property];
-      }
-    }
-    return source;
-  }
+document.getElementsByClassName("modal")[0].addEventListener("click", () => {
+	modalContent.removeChild(modalContent.childNodes[1]);
+	modalContent.removeChild(modalContent.childNodes[1]);  
+	modal.style.display = "none";
+});

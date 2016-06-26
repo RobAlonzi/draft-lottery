@@ -26,7 +26,7 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 		row += `<th>Change from Original</th>`;
 	}		   
 	
-	row += `<td>&nbsp;</td>`;		  
+	//row += `<td>&nbsp;</td>`;		  
 
 	thead.innerHTML = `<tr>${row}</tr>`;
 	table.appendChild(thead);
@@ -39,27 +39,26 @@ exports.setupOddsChart = (teams, ballsDrawn) => {
 
 		if(showExtraColumns){
 			let change = team.odds.change > 0 ? 'up' : 'down';
-			iconHTML = `<td class="change-${change}"><i class="ion-arrow-${change}-a" aria-hidden="true"></i> ${team.odds.change}%</td>`;
+			iconHTML = `<td class="change-${change}"><i class="ion-arrow-${change}-a" aria-hidden="true"></i> ${Math.abs(team.odds.change)}%</td>`;
 		}
 
 		if(team.winsWith && ballsDrawn === 3)
 			winsWith = `<p> Wins with: ${team.winsWith} </p>`;
 
 
-		let detailsBtn = document.createElement('button');
-		detailsBtn.className = "btn btn-info-outline details-btn";
-		detailsBtn.innerHTML = "View Details";
+		// let detailsBtn = document.createElement('button');
+		// detailsBtn.className = "btn btn-info-outline details-btn";
+		// detailsBtn.innerHTML = "View Details";
 
-		//let teamValue = document.createAttribute("team").value = team;
-		detailsBtn.setAttribute("team", i); 
+		// //let teamValue = document.createAttribute("team").value = team;
+		// detailsBtn.setAttribute("team", i); 
 
 
 		let row = `
 		<th scope="row">${i+1}</th>
 		<td>${team.name}</td>
 		<td>${team.combos} (${team.odds.percent}% chance) ${winsWith}</td>
-		${iconHTML} 
-		<td>${detailsBtn.outerHTML}</td>`;
+		${iconHTML} `;
 
 
 		let tblRow = document.createElement('tr');
@@ -116,9 +115,17 @@ exports.showWinner = (round, team, ballsDrawn) => {
 		winningBalls += exports.createLotteryBall(ball, true);
 	});
 
+	let position = team.originalStats.pick - round;
+	let change = position > 0 ? 'up' : 'down';
+		change = position === 0 ? 'none' : change;
+	let icon = '';
+
+	if(change !== 'none')
+		icon = `<span class="change-${change}">(<i class="ion-arrow-${change}-a" aria-hidden="true"></i> ${Math.abs(position)})</span>`;
+
 	div.className = `winning-team`;
 	div.innerHTML = `<h2>Pick #${round}</h2>
-	<span>${team.name}</span>
+	<span>${team.name} ${icon}</span>
 	<div class="winning-balls">${winningBalls}</div>`;
 
 	container.appendChild(div);
@@ -170,7 +177,7 @@ exports.showFinalOrder = (teams, pickStart) => {
 		let row = `
 				<th scope="row">${i+pickStart}</th>
 				<td>${team.name}</td>
-				<td class="change-${change}">${icon} ${team.placeChange}</td>`;
+				<td class="change-${change}">${icon} ${Math.abs(team.placeChange)}</td>`;
 
 
 		tbody.innerHTML += document.createElement('tr').innerHTML = row;

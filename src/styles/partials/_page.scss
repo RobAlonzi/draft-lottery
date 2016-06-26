@@ -102,7 +102,23 @@ header{
 		span{
 			font-size:1.2em;
 			display:block;
+
+			span{
+				display: inline-block;
+				font-size:1em;
+
+				&.change-up, &.change-up i{
+					color:green;
+				}
+
+				&.change-down, &.change-down i{
+					color:red;
+				}
+			}
+
 		}
+		
+
 		.winning-balls{
 				margin:10px 0 0 55px;
 		.ball{
@@ -147,28 +163,60 @@ header{
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
 
-/* Modal Content/Box */
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-}
+    /* Modal Content/Box */
+	.modal-content {
+	    background-color: #fefefe;
+	    margin: 100px auto; /* 15% from the top and centered */
+	    padding: 20px;
+	    border: 1px solid #888;
+		/* The Close Button */
+		.close {
+		    color: #aaa;
+		    float: right;
+		    font-size: 28px;
+		    font-weight: bold;
 
-/* The Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
+			&:hover, &:focus{
+				color: black;
+				text-decoration: none;
+    			cursor: pointer;
+			}
 
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+		}
+
+		.losing-list ul li .ball{
+			opacity: 0.5;
+		}
+
+
+		li{
+			list-style-type: none;
+			display: block;
+			clear:both;
+
+			.ball{
+				border-radius: 50%;
+				width:40px;
+				height:40px;
+				background: radial-gradient(circle at 50% 40%,#fcfcfc,#efeff1 66%,#9b5050 100%);
+				position: relative;
+				float:left;
+				margin-right:5px;
+
+				@include bp-sm(){
+					margin:10px auto;
+				}
+
+				span{
+					position: absolute;
+					top:30%;
+					width: 100%;
+					text-align: center;
+					font-size:0.75em;
+				}
+
+			}
+		}
+	}
 }

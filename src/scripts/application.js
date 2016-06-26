@@ -201,14 +201,7 @@ function sortTeams(a, b){
 
 function showDetails(){
 	const team = this.getAttribute("team");
-
-	//Modal.create(teams[team]);
-
-
-	var modal = document.getElementsByClassName('modal')[0];
-	modal.style.display = "block";
-
-
+	Modal.create(teams[team]);
 } 
 
 
