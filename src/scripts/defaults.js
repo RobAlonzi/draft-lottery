@@ -25,7 +25,7 @@ exports.getCombos = () => {
 }
 
 let Defaults  = {
-	title: "OTHL Draft Lottery",
+	title: "WCFHL Draft Lottery",
 	description: "Lottery Description",
 	lottery: {
 		rounds: 3,
@@ -36,7 +36,7 @@ let Defaults  = {
 	},
 	teams: [
 	{
-		name: "Montreal Canadiens",
+		name: "San Jose Sharks",
 		combos: 200,
 		originalStats: {
 			pick: 1,
@@ -44,7 +44,7 @@ let Defaults  = {
 			pct: 20
 		}
 	},{
-		name: "Vancouver Canucks",
+		name: "Carolina Hurricanes",
 		combos: 135,
 		originalStats: {
 			pick: 2,
@@ -52,7 +52,7 @@ let Defaults  = {
 			pct: 13.5
 		}
 	},{
-		name: "Winnipeg Jets",
+		name: "Florida Panthers",
 		combos: 115,
 		originalStats: {
 			pick: 3,
@@ -60,7 +60,7 @@ let Defaults  = {
 			pct: 11.5
 		}
 	},{
-		name: "Detroit Red Wings",
+		name: "Montreal Canadiens",
 		combos: 95,
 		originalStats: {
 			pick: 4,
@@ -68,7 +68,7 @@ let Defaults  = {
 			pct: 9.5
 		}
 	},{
-		name: "New York Rangers",
+		name: "Nashville Predators",
 		combos: 85,
 		originalStats: {
 			pick: 5,
@@ -76,7 +76,7 @@ let Defaults  = {
 			pct: 8.5
 		}
 	},{
-		name: "New York Islanders",
+		name: "New York Rangers",
 		combos: 75,
 		originalStats: {
 			pick: 6,
@@ -84,7 +84,7 @@ let Defaults  = {
 			pct: 7.5
 		}
 	},{
-		name: "Columbus Blue Jackets",
+		name: "Pittsburgh Penguins",
 		combos: 65,
 		originalStats: {
 			pick: 7,
@@ -92,7 +92,7 @@ let Defaults  = {
 			pct: 6.5
 		}
 	},{
-		name: "Philadelphia Flyers",
+		name: "New Jersey Devils",
 		combos: 60,
 		originalStats: {
 			pick: 8,
@@ -100,7 +100,7 @@ let Defaults  = {
 			pct: 6
 		}
 	},{
-		name: "Los Angeles Kings",
+		name: "Detroit Red Wings",
 		combos: 50,
 		originalStats: {
 			pick: 9,
@@ -108,7 +108,7 @@ let Defaults  = {
 			pct: 5
 		}
 	},{
-		name: "St. Louis Blues",
+		name: "Minnesota Wild",
 		combos: 35,
 		originalStats: {
 			pick: 10,
@@ -116,7 +116,7 @@ let Defaults  = {
 			pct: 3.5
 		}
 	},{
-		name: "Ottawa Senators",
+		name: "Toronto Maple Leafs",
 		combos: 30,
 		originalStats: {
 			pick: 11,
@@ -124,7 +124,7 @@ let Defaults  = {
 			pct: 3
 		}
 	},{
-		name: "Arizona Coyotes",
+		name: "Chicago Blackhawks",
 		combos: 25,
 		originalStats: {
 			pick: 12,
@@ -132,7 +132,7 @@ let Defaults  = {
 			pct: 2.5
 		}
 	},{
-		name: "Carolina Hurricanes",
+		name: "Winnipeg Jets",
 		combos: 20,
 		originalStats: {
 			pick: 13,
@@ -140,7 +140,7 @@ let Defaults  = {
 			pct: 2
 		}
 	},{
-		name: "Calgary Flames",
+		name: "Vancouver Canucks",
 		combos: 10,
 		originalStats: {
 			pick: 14,

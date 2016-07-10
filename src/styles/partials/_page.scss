@@ -17,29 +17,26 @@ header{
 
 .lottery-balls, .odds, .buttons, .settings{ margin-top:40px; }
 
-.lottery-balls{
-	.ball{
-		border-radius: 50%;
-		width:100px;
-		height:100px;
-		background: radial-gradient(circle at 50% 40%,#fcfcfc,#efeff1 66%,#9b5050 100%);
-		margin:0 auto;
-		position: relative;
+.ball{
+	border-radius: 50%;
+	width:100px;
+	height:100px;
+	background: radial-gradient(circle at 50% 40%,#fcfcfc,#efeff1 66%,#9b5050 100%);
+	margin:0 auto;
+	position: relative;
 
-		@include bp-sm(){
-			margin:10px auto;
-		}
+	@include bp-sm(){
+		margin:10px auto;
+	}
 
-		span{
-			position: absolute;
-			top:30%;
-			width: 100%;
-			text-align: center;
-			font-size:2em;
-		}
+	span{
+		position: absolute;
+		top:30%;
+		width: 100%;
+		text-align: center;
+		font-size:2em;
 	}
 }
-
 
 .buttons{
 	text-align:center;
@@ -85,7 +82,6 @@ header{
 
 	.winning-team{
 		margin:30px 4.16%;
-		text-align: center;
 		width: 25%;
 		padding-bottom:15px;
 		display: inline-block;
@@ -97,14 +93,15 @@ header{
 		}
 
 		h2{
+			text-align: center;
 			font-size:2.5em;
 		}
-		span{
+		p{
+			text-align: center;
 			font-size:1.2em;
-			display:block;
+			margin:20px 0;
 
 			span{
-				display: inline-block;
 				font-size:1em;
 
 				&.change-up, &.change-up i{
@@ -117,105 +114,58 @@ header{
 			}
 
 		}
-		
 
-		.winning-balls{
-				margin:10px 0 0 55px;
 		.ball{
-				border-radius: 50%;
-				width:40px;
-				height:40px;
-				background: radial-gradient(circle at 50% 40%,#fcfcfc,#efeff1 66%,#9b5050 100%);
-				position: relative;
-				float:left;
-				margin-right:5px;
-
-				@include bp-sm(){
-					margin:10px auto;
-				}
-
-				span{
-					position: absolute;
-					top:30%;
-					width: 100%;
-					text-align: center;
-					font-size:0.75em;
-				}
-
+			width:40px;
+			height:40px;
+			span{
+				font-size:0.75em;
 			}
-
-		}
+		}	
 	
 	}
 
 
 }
 
+.modal-bg{
+	position: fixed;
+	top:0;
+	right:0;
+	bottom:0;
+	left: 0;
+	background: rgba(0,0,0,0.7);
+	z-index: 999;
 
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	.modal-content{
+		width:60%;
+		background: #FFF;
+		margin: 5% auto 0;
+		overflow: scroll;
+		height:75%;
+		max-height:900px;
+	
+		.combo-container{
+			width: 40%;
+			float:left;
+			margin:10px 15px;
 
-    /* Modal Content/Box */
-	.modal-content {
-	    background-color: #fefefe;
-	    margin: 100px auto; /* 15% from the top and centered */
-	    padding: 20px;
-	    border: 1px solid #888;
-		/* The Close Button */
-		.close {
-		    color: #aaa;
-		    float: right;
-		    font-size: 28px;
-		    font-weight: bold;
-
-			&:hover, &:focus{
-				color: black;
-				text-decoration: none;
-    			cursor: pointer;
+			.combo-row{
+				margin:10px 0;
+				overflow:auto;
 			}
 
+			&.right{
+				float: right;
+			}
 		}
+		
 
-		.losing-list ul li .ball{
-			opacity: 0.5;
-		}
-
-
-		li{
-			list-style-type: none;
-			display: block;
-			clear:both;
-
-			.ball{
-				border-radius: 50%;
-				width:40px;
-				height:40px;
-				background: radial-gradient(circle at 50% 40%,#fcfcfc,#efeff1 66%,#9b5050 100%);
-				position: relative;
-				float:left;
-				margin-right:5px;
-
-				@include bp-sm(){
-					margin:10px auto;
-				}
-
-				span{
-					position: absolute;
-					top:30%;
-					width: 100%;
-					text-align: center;
-					font-size:0.75em;
-				}
-
+		.ball{
+			width:40px;
+			height:40px;
+			span{
+				font-size:0.75em;
 			}
 		}
 	}

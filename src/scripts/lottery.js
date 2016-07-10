@@ -1,6 +1,134 @@
 module.exports = exports = {};
 
-exports.setBallRange = (min, max) => {
+
+exports.initCombos = (settings) => {
+	initCombos(settings);	
+}
+
+
+exports.calculateOddsBlock = (totalCombos, teams) => {
+	teams.forEach((team) => {
+		team.odds = calculateOddsBlock(team.combos, totalCombos, team.originalStats.pct);
+	});
+
+	return teams;
+};
+
+
+exports.drawBall = (lottery) => {
+	let ballDrawn = drawBall(lottery.ballRange);
+	let ballDrawnIndex = lottery.ballRange.indexOf(ballDrawn);
+
+	lottery.mostRecentBallDrawn = ballDrawn;
+	lottery.ballRange.splice(ballDrawnIndex, 1);
+	lottery.ballsDrawn.push(ballDrawn);
+
+
+	return lottery;
+}
+
+exports.updateOdds = (teams, lottery, reveal) => {
+	let ballDrawn = lottery.mostRecentBallDrawn,
+		ballsDrawn = lottery.ballsDrawn;
+
+	teams.forEach((team) => {
+		team = removeLosingCombos(team, ballDrawn);
+
+		if(reveal)
+			team.winsWith = revealWinningCombos(team, ballsDrawn);
+	});
+
+	let totalCombos = countCombosRemaining(teams);
+
+	teams.forEach((team) => {
+		team.odds = calculateOddsBlock(team.combos, totalCombos, team.originalStats.pct);
+	});
+
+	teams = teams.sort(sortTeams);
+
+	return teams;
+}
+
+
+exports.startNewRound = (teams) => {
+	teams.forEach((team) => {
+		team.winningCombos = team.winningCombos.concat(team.losingCombos);
+		team.losingCombos = [];
+		team.winsWith = null;
+		team.odds = null;
+		team.combos = team.winningCombos.length;
+	});
+
+	return teams;
+};
+
+exports.removeWinner = (teams, lottery) => {
+	let winningCombos = teams[0].winningCombos,
+		redrawTeamIndex = teams.length - 1,
+		redrawCombos = teams[redrawTeamIndex].winningCombos;
+
+	//add winning teams combos into redraws combos	
+	teams[redrawTeamIndex].winningCombos = redrawCombos.concat(winningCombos);
+
+	//change the original odds for the redraw combo	
+	teams[redrawTeamIndex].originalStats.combos = teams[redrawTeamIndex].winningCombos.length;
+	teams[redrawTeamIndex].originalStats.pct = calculateWinPct(teams[redrawTeamIndex].winningCombos.length, lottery.combosRemaining);
+
+	//remove the first team from array (the winning team)
+	teams.shift();
+
+	return teams;
+}
+
+
+
+
+
+
+
+
+
+
+function initCombos(settings) {
+ 	let lottery = settings.lottery,
+ 		teams = settings.teams,
+ 		availableCombos = [];
+
+ 	//create array of potential numbers to be drawn
+ 	lottery.ballRange = setBallRange(lottery.ballMin, lottery.ballMax);
+ 	//create array of possible unique combos to distribute between teams
+ 	availableCombos = getAvailableCombos(lottery.ballRange, lottery.ballsDrawnPerRound);
+ 	//store amount of combinations for winning pct calcs
+	lottery.combosRemaining = availableCombos.length;
+
+
+	//the last X combos will be the re-draw ones (before the shuffle). Add them to the list of teams 
+	//and subtract those combos from the pool (only if needed).
+	let redrawCombos = setRedrawCombos(availableCombos, teams, lottery.combosRemaining);
+
+	//if any, remove redraw combos from the pool of available combos if
+	if(redrawCombos)
+		availableCombos.splice(availableCombos.length - redrawCombos.combos, redrawCombos.combos);
+
+	//shuffle the array before distribution
+	availableCombos = shuffle(availableCombos);
+
+	//assign the combos to each team
+	teams = assignCombos(availableCombos, teams);
+
+	//add redraw into the teams pool if any
+	if(redrawCombos)
+		teams.push(redrawCombos);
+
+	//calculate the initial percentages of that team winning
+	teams = exports.calculateOddsBlock(lottery.combosRemaining, teams);
+	//sort the teams based on odds
+	teams = teams.sort(sortTeams);
+
+	return settings;
+ } 
+
+function setBallRange(min, max){
 	let ballRange = [];
 	for(let i = min; i <= max; i++){
 		ballRange.push(i);
@@ -10,9 +138,8 @@ exports.setBallRange = (min, max) => {
 };	
 
 
-exports.getAvailableCombos = (range, draws) => {
-
-	var makeCombos =  (draws, range, tmp, combos) => {
+function getAvailableCombos(range, draws){
+	let makeCombos =  (draws, range, tmp, combos) => {
 	    if (draws == 0) {
 	        if (tmp.length > 0) {
 	            combos[combos.length] = tmp;
@@ -35,7 +162,7 @@ exports.getAvailableCombos = (range, draws) => {
 }
 
 
-exports.setRedrawCombos = (combos, teams, lottery) => {
+function setRedrawCombos(combos, teams, combosRemaining){
 	let nonRedrawComboLength = 0,
 		redrawCombos = [];
 
@@ -48,8 +175,8 @@ exports.setRedrawCombos = (combos, teams, lottery) => {
 	}
 
 	if(redrawCombos.length > 0){
-
-		let pct = calculateWinningPct(redrawCombos.length, lottery.combosRemaining, 0.1);
+		//fix this.. calculate function returns a block
+		let pct = calculateWinPct(redrawCombos.length, combosRemaining);
 
 		return {
 			name: "Redraw",
@@ -57,7 +184,7 @@ exports.setRedrawCombos = (combos, teams, lottery) => {
 			originalStats: {
 				pick: (teams.length + 1),
 				combos: redrawCombos.length,
-				pct: pct.percent
+				pct: pct
 			},
 			winningCombos: redrawCombos,
 			losingCombos: []
@@ -67,64 +194,53 @@ exports.setRedrawCombos = (combos, teams, lottery) => {
 	return false;
 }
 
-exports.assignCombos = (combos, teams) => {
-
+function assignCombos(combos, teams){
 	teams.forEach((team) => {
-		//stop when you hit Redraw
-		if(team.name === "Redraw"){
-			return;
-		}
-
 		team.winningCombos = [];
 		team.losingCombos = [];
 
 		for(let i = 0; i < team.combos; i++){
 			team.winningCombos.push(combos[i]);
 		}
-
 		combos.splice(0, team.combos);
 	});
-
 	return teams;
 }
 
 
-exports.resetCombos = (teams) => {
-	teams.forEach((team) => {
-		team.winningCombos = team.winningCombos.concat(team.losingCombos);
-		team.losingCombos = [];
-	});
-
-	return teams;
-};
 
 
-exports.removeWinner = (teams, lottery) => {
-	let winningCombos = teams[0].winningCombos,
-		redrawCombos = teams[teams.length - 1].winningCombos;
-	teams[teams.length - 1].winningCombos = redrawCombos.concat(winningCombos);
-	teams.shift();
-
-	let pct = calculateWinningPct(teams[teams.length - 1].winningCombos.length, lottery.combosRemaining, 0);
-	teams[teams.length - 1].originalStats.combos = teams[teams.length - 1].winningCombos.length;
-	teams[teams.length - 1].originalStats.pct = pct.percent;
 
 
-	return teams;
-}
 
 
-exports.drawBall = (lottery) => {
-	let ballDrawn = drawBall(lottery.ballRange);
-	let ballDrawnIndex = lottery.ballRange.indexOf(ballDrawn);
-
-	lottery.mostRecentBallDrawn = ballDrawn;
-	lottery.ballRange.splice(ballDrawnIndex, 1);
-	lottery.ballsDrawn.push(ballDrawn);
 
 
-	return lottery;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 exports.endLottery = (teams, lottery) => {
@@ -154,35 +270,6 @@ function getPlaceChange(team, place){
 /* -----------------------------------------------------------------------
 	--------------------------------------------------------------------- */
 
-
-exports.updateOdds = (teams, lottery, reveal) => {
-	let ballDrawn = lottery.mostRecentBallDrawn,
-		ballsDrawn = lottery.ballsDrawn;
-
-	teams.forEach((team) => {
-		team = removeLosingCombos(team, ballDrawn);
-
-		if(reveal)
-			team.winsWith = revealWinningCombos(team, ballsDrawn);
-	});
-
-	let totalCombos = countCombosRemaining(teams);
-
-	teams.forEach((team) => {
-		team.odds = calculateWinningPct(team.combos, totalCombos, team.originalStats.pct);
-	});
-
-	return teams;
-}
-
-
-exports.calculateWinningPct = (totalCombos, teams) => {
-	teams.forEach((team) => {
-		team.odds = calculateWinningPct(team.combos, totalCombos, team.originalStats.pct);
-	});
-
-	return teams;
-};
 
 
 
@@ -232,13 +319,52 @@ function countCombosRemaining(teams) {
 }
 
 
-function calculateWinningPct(teamCombos, totalCombos, originalPct){
-	let winPct = (teamCombos / totalCombos * 100).toFixed(1),
-		change = (winPct - originalPct).toFixed(1);
+function calculateOddsBlock(teamCombos, totalCombos, originalPct){
+	let winPct = calculateWinPct(teamCombos, totalCombos),
+		change = calculatePctChange(winPct, originalPct);
 
 	return{
 			percent: winPct,
 			combos : teamCombos,
 			change: change
 		};
+}
+
+
+function calculateWinPct(combos, total){
+	return (combos / total * 100).toFixed(1);
+}
+
+function calculatePctChange(pct, oldPct){
+	return (pct - oldPct).toFixed(1);
+}
+
+
+
+/* UTILITY FUNCTIONS */
+
+function shuffle(array) {
+	for(let i = array.length - 1; i > 0; i--){
+	    let j = Math.floor(Math.random() * (i + 1));
+	    let temp = array[i];
+	    array[i] = array[j];
+	    array[j] = temp;
+	}
+	return array;
+}
+
+function sortTeams(a, b){
+	if(a.combos > b.combos)
+		return -1;
+	if(a.combos < b.combos)
+		return 1;
+	if(a.name === "Redraw")
+		return 1;
+	if(b.name === "Redraw")
+		return -1;
+	if(a.originalStats.combos > b.originalStats.combos)
+		return -1;
+	if(a.originalStats.combos < b.originalStats.combos)
+		return 1;
+	return 0;
 }

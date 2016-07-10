@@ -23,6 +23,10 @@ html,
 body{
     font-weight: 300;
     text-rendering: optimizeLegibility;
+
+    &.modal-open{
+    	overflow-y: hidden;
+    }
 }
 
 .hidden{
