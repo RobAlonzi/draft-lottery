@@ -1,17 +1,58 @@
+import Data from "./data.js";
+import HTMLCreate from "./dom.js";
+
+
 module.exports = exports = {};
 
 
-exports.initCombos = (settings) => {
-	initCombos(settings);	
+exports.initApp = () => {
+	let settings = Data.getDefaults(),
+		teams = settings.teams,
+		lottery = settings.lottery;
+
+	lottery.ballRange = setBallRange(lottery.ballMin, lottery.ballMax);
+	let availableCombos = getAvailableCombos(lottery.ballRange, lottery.ballsDrawnPerRound);
+	lottery.combosRemaining = availableCombos.length;
+	
+	let redrawCombos = setRedrawCombos(availableCombos, teams, lottery.combosRemaining);
+
+	if(redrawCombos){
+		availableCombos.splice(availableCombos.length - redrawCombos.combos, redrawCombos.combos);
+	}
+
+	availableCombos = shuffle(availableCombos);
+	teams = assignCombos(availableCombos, teams);
+
+	if(redrawCombos){
+		teams.push(redrawCombos);
+	}
+
+	exports.calculateOddsBlock(teams, lottery.combosRemaining);
+	teams = teams.sort(sortTeams);
+
+	HTMLCreate.setupOddsChart(teams, 0);
+
+	//assigning settings to defaults so we don't have to
+	//keep recalculating on a reset
+	Data.setDefaultLottery(lottery); 
+	Data.setDefaultCombos(teams);
+
+	Data.setCurrentLottery(lottery);
+	Data.setCurrentCombos(teams);
+
+	console.log(Data.getCurrentCombos());
+
+	return true;
 }
 
 
-exports.calculateOddsBlock = (totalCombos, teams) => {
+
+exports.calculateOddsBlock = (teams, totalCombos) => {
 	teams.forEach((team) => {
 		team.odds = calculateOddsBlock(team.combos, totalCombos, team.originalStats.pct);
 	});
 
-	return teams;
+	return true;
 };
 
 
@@ -85,59 +126,6 @@ exports.removeWinner = (teams, lottery) => {
 
 
 
-
-
-
-
-function initCombos(settings) {
- 	let lottery = settings.lottery,
- 		teams = settings.teams,
- 		availableCombos = [];
-
- 	//create array of potential numbers to be drawn
- 	lottery.ballRange = setBallRange(lottery.ballMin, lottery.ballMax);
- 	//create array of possible unique combos to distribute between teams
- 	availableCombos = getAvailableCombos(lottery.ballRange, lottery.ballsDrawnPerRound);
- 	//store amount of combinations for winning pct calcs
-	lottery.combosRemaining = availableCombos.length;
-
-
-	//the last X combos will be the re-draw ones (before the shuffle). Add them to the list of teams 
-	//and subtract those combos from the pool (only if needed).
-	let redrawCombos = setRedrawCombos(availableCombos, teams, lottery.combosRemaining);
-
-	//if any, remove redraw combos from the pool of available combos if
-	if(redrawCombos)
-		availableCombos.splice(availableCombos.length - redrawCombos.combos, redrawCombos.combos);
-
-	//shuffle the array before distribution
-	availableCombos = shuffle(availableCombos);
-
-	//assign the combos to each team
-	teams = assignCombos(availableCombos, teams);
-
-	//add redraw into the teams pool if any
-	if(redrawCombos)
-		teams.push(redrawCombos);
-
-	//calculate the initial percentages of that team winning
-	teams = exports.calculateOddsBlock(lottery.combosRemaining, teams);
-	//sort the teams based on odds
-	teams = teams.sort(sortTeams);
-
-	return settings;
- } 
-
-function setBallRange(min, max){
-	let ballRange = [];
-	for(let i = min; i <= max; i++){
-		ballRange.push(i);
-	}
-
-	return ballRange;
-};	
-
-
 function getAvailableCombos(range, draws){
 	let makeCombos =  (draws, range, tmp, combos) => {
 	    if (draws == 0) {
@@ -176,23 +164,28 @@ function setRedrawCombos(combos, teams, combosRemaining){
 
 	if(redrawCombos.length > 0){
 		//fix this.. calculate function returns a block
-		let pct = calculateWinPct(redrawCombos.length, combosRemaining);
+		let pct = calculateWinPct(redrawCombos.length, combosRemaining),
 
-		return {
-			name: "Redraw",
-			combos: redrawCombos.length,
-			originalStats: {
-				pick: (teams.length + 1),
+			redrawTeam = {
+				name: "Redraw",
 				combos: redrawCombos.length,
-				pct: pct
-			},
-			winningCombos: redrawCombos,
-			losingCombos: []
-		}
+				originalStats: {
+					pick: (teams.length + 1),
+					combos: redrawCombos.length,
+					pct: pct
+				},
+				winningCombos: redrawCombos,
+				losingCombos: []
+			};
+		
+		return redrawTeam;
 	}
 
 	return false;
 }
+
+
+
 
 function assignCombos(combos, teams){
 	teams.forEach((team) => {
@@ -208,7 +201,14 @@ function assignCombos(combos, teams){
 }
 
 
+function setBallRange(min, max){
+	let ballRange = [];
+	for(let i = min; i <= max; i++){
+		ballRange.push(i);
+	}
 
+	return ballRange;
+};	
 
 
 

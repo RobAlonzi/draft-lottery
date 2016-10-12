@@ -5,24 +5,46 @@ exports.getDefaults = () => {
 	return JSON.parse(JSON.stringify(Defaults));
 }
 
-exports.setLottery = (lottery) => {
+exports.setDefaultLottery = (lottery) => {
 	Defaults.lottery = JSON.parse(JSON.stringify(lottery));
 	return true;
 }
 
-exports.getLottery = () => {
+exports.getDefaultLottery = () => {
 	return JSON.parse(JSON.stringify(Defaults.lottery));
 }
 
 
-exports.setCombos = (teams) => {
+exports.setDefaultCombos = (teams) => {
 	Defaults.teams = JSON.parse(JSON.stringify(teams));
 	return true;
 }
 
-exports.getCombos = () => {
+exports.getDefaultCombos = () => {
 	return JSON.parse(JSON.stringify(Defaults.teams));
 }
+
+exports.setCurrentLottery = (lottery) => {
+	currentState.lottery = JSON.parse(JSON.stringify(lottery));
+	return true;
+}
+
+exports.getCurrentLottery = () => {
+	return JSON.parse(JSON.stringify(currentState.lottery));
+}
+
+
+exports.setCurrentCombos = (teams) => {
+	currentState.teams = JSON.parse(JSON.stringify(teams));
+	return true;
+}
+
+exports.getCurrentCombos = () => {
+	return JSON.parse(JSON.stringify(currentState.teams));
+}
+
+let currentState = {};
+
 
 let Defaults  = {
 	title: "WCFHL Draft Lottery",
